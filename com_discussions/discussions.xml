@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.8" type="component" method="upgrade">
+	<name>COM_DISCUSSIONS</name>
+	<author>Nerudas</author>
+	<creationDate>May 2018</creationDate>
+	<copyright>Copyright (c) 2015 - 2018 Nerudas. All rights reserved.</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>support@nerudas.ru</authorEmail>
+	<authorUrl>nerudas.ru</authorUrl>
+	<version>1.0.0</version>
+	<description>COM_DISCUSSIONS_DESCRIPTION</description>
+	<scriptfile>script.php</scriptfile>
+	<install>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+		</sql>
+	</install>
+	<uninstall>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+		</sql>
+	</uninstall>
+	<files folder="site">
+		<folder>controllers</folder>
+		<folder>helpers</folder>
+		<folder>models</folder>
+		<folder>views</folder>
+		<filename>controller.php</filename>
+		<filename>discussions.php</filename>
+		<filename>router.php</filename>
+	</files>
+	<languages folder="site">
+		<language tag="en-GB">language/en-GB/en-GB.com_discussions.ini</language>
+		<language tag="en-GB">language/en-GB/en-GB.com_discussions.sys.ini</language>
+		<language tag="ru-RU">language/ru-RU/ru-RU.com_discussions.ini</language>
+		<language tag="ru-RU">language/ru-RU/ru-RU.com_discussions.sys.ini</language>
+	</languages>
+	<administration>
+		<menu>COM_DISCUSSIONS</menu>
+		<submenu>
+			<menu option="com_discussions" view="posts">COM_DISCUSSIONS_POSTS</menu>
+			<menu option="com_discussions" view="topics">COM_DISCUSSIONS_TOPICS</menu>
+		</submenu>
+		<files folder="admin">
+			<folder>controllers</folder>
+			<folder>helpers</folder>
+			<folder>layouts</folder>
+			<folder>models</folder>
+			<folder>sql</folder>
+			<folder>tables</folder>
+			<folder>views</folder>
+			<filename>access.xml</filename>
+			<filename>config.xml</filename>
+			<filename>controller.php</filename>
+			<filename>discussions.php</filename>
+		</files>
+		<languages folder="admin">
+			<language tag="en-GB">language/en-GB/en-GB.com_discussions.ini</language>
+			<language tag="en-GB">language/en-GB/en-GB.com_discussions.sys.ini</language>
+			<language tag="ru-RU">language/ru-RU/ru-RU.com_discussions.ini</language>
+			<language tag="ru-RU">language/ru-RU/ru-RU.com_discussions.sys.ini</language>
+		</languages>
+	</administration>
+	<media destination="com_discussions" folder="media">
+		<folder>css</folder>
+		<folder>js</folder>
+	</media>
+</extension>
