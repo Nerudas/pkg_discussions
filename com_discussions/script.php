@@ -33,6 +33,7 @@ class com_DiscussionsInstallerScript
 		$this->tagsIntegration();
 		$this->createImageFolder();
 		$this->moveLayouts($path);
+		$this->createRootCategory();
 
 		return true;
 	}
@@ -46,6 +47,7 @@ class com_DiscussionsInstallerScript
 	{
 		$folders = array(
 			JPATH_ROOT . '/images/discussions',
+			JPATH_ROOT . '/images/discussions/categories',
 			JPATH_ROOT . '/images/discussions/topics',
 		);
 		foreach ($folders as $folder)
@@ -59,13 +61,109 @@ class com_DiscussionsInstallerScript
 	}
 
 	/**
+	 * Create root category
+	 *
+	 * @since  1.0.0
+	 */
+	protected function createRootCategory()
+	{
+		$db = Factory::getDbo();
+
+		// Category
+		$query = $db->getQuery(true)
+			->select('id')
+			->from($db->quoteName('#__discussions_categories'))
+			->where($db->quoteName('id') . ' = ' . $db->quote(1));
+		$db->setQuery($query);
+		$current_id = $db->loadResult();
+
+		$root            = new stdClass();
+		$root->id        = 1;
+		$root->parent_id = 0;
+		$root->lft       = 0;
+		$root->rgt       = 1;
+		$root->level     = 0;
+		$root->path      = '';
+		$root->alias     = 'root';
+		$root->access    = 1;
+		$root->state     = 1;
+
+		(!empty($current_id)) ? $db->updateObject('#__discussions_categories', $root, 'id')
+			: $db->insertObject('#__discussions_categories', $root);
+	}
+
+
+	/**
 	 * Create or update tags integration
 	 *
 	 * @since 1.0.0
 	 */
 	protected function tagsIntegration()
 	{
-		$db    = Factory::getDbo();
+		$db = Factory::getDbo();
+
+		// Category
+		$query = $db->getQuery(true)
+			->select('type_id')
+			->from($db->quoteName('#__content_types'))
+			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_discussions.category'));
+		$db->setQuery($query);
+		$current_id = $db->loadResult();
+
+		$category                                               = new stdClass();
+		$category->type_id                                      = (!empty($current_id)) ? $current_id : '';
+		$category->type_title                                   = 'Discussions Category';
+		$category->type_alias                                   = 'com_discussions.category';
+		$category->table                                        = new stdClass();
+		$category->table->special                               = new stdClass();
+		$category->table->special->dbtable                      = '#__discussions_categories';
+		$category->table->special->key                          = 'id';
+		$category->table->special->type                         = 'Categories';
+		$category->table->special->prefix                       = 'DiscussionsTable';
+		$category->table->special->config                       = 'array()';
+		$category->table->common                                = new stdClass();
+		$category->table->common->dbtable                       = '#__ucm_content';
+		$category->table->common->key                           = 'ucm_id';
+		$category->table->common->type                          = 'Corecontent';
+		$category->table->common->prefix                        = 'JTable';
+		$category->table->common->config                        = 'array()';
+		$category->table                                        = json_encode($category->table);
+		$category->rules                                        = '';
+		$category->field_mappings                               = new stdClass();
+		$category->field_mappings->common                       = new stdClass();
+		$category->field_mappings->common->core_content_item_id = 'id';
+		$category->field_mappings->common->core_title           = 'title';
+		$category->field_mappings->common->core_state           = 'state';
+		$category->field_mappings->common->core_alias           = 'alias';
+		$category->field_mappings->common->core_created_time    = 'null';
+		$category->field_mappings->common->core_modified_time   = 'null';
+		$category->field_mappings->common->core_body            = 'null';
+		$category->field_mappings->common->core_hits            = 'null';
+		$category->field_mappings->common->core_publish_up      = 'null';
+		$category->field_mappings->common->core_publish_down    = 'null';
+		$category->field_mappings->common->core_access          = 'access';
+		$category->field_mappings->common->core_params          = 'attribs';
+		$category->field_mappings->common->core_featured        = 'null';
+		$category->field_mappings->common->core_metadata        = 'metadata';
+		$category->field_mappings->common->core_language        = 'null';
+		$category->field_mappings->common->core_images          = 'null';
+		$category->field_mappings->common->core_urls            = 'null';
+		$category->field_mappings->common->core_version         = 'null';
+		$category->field_mappings->common->core_ordering        = 'lft';
+		$category->field_mappings->common->core_metakey         = 'metakey';
+		$category->field_mappings->common->core_metadesc        = 'metadesc';
+		$category->field_mappings->common->core_catid           = 'null';
+		$category->field_mappings->common->core_xreference      = 'null';
+		$category->field_mappings->common->asset_id             = 'null';
+		$category->field_mappings->special                      = new stdClass();
+		$category->field_mappings                               = json_encode($category->field_mappings);
+		$category->router                                       = 'DiscussionsHelperRoute::getListRoute';
+		$category->content_history_options                      = '';
+
+		(!empty($current_id)) ? $db->updateObject('#__content_types', $category, 'type_id')
+			: $db->insertObject('#__content_types', $category);
+
+		// Topic
 		$query = $db->getQuery(true)
 			->select('type_id')
 			->from($db->quoteName('#__content_types'))
@@ -160,8 +258,14 @@ class com_DiscussionsInstallerScript
 	 */
 	public function uninstall(JAdapterInstance $adapter)
 	{
+		$db = Factory::getDbo();
+
 		// Remove content_type
-		$db    = Factory::getDbo();
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__content_types'))
+			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_discussions.category'));
+		$db->setQuery($query)->execute();
+
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__content_types'))
 			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_discussions.topic'));
@@ -170,10 +274,20 @@ class com_DiscussionsInstallerScript
 		// Remove tag_map
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__contentitem_tag_map'))
+			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_discussions.category'));
+		$db->setQuery($query)->execute();
+
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__contentitem_tag_map'))
 			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_discussions.topic'));
 		$db->setQuery($query)->execute();
 
 		// Remove ucm_content
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ucm_content'))
+			->where($db->quoteName('core_type_alias') . ' = ' . $db->quote('com_discussions.category'));
+		$db->setQuery($query)->execute();
+
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__ucm_content'))
 			->where($db->quoteName('core_type_alias') . ' = ' . $db->quote('com_discussions.topic'));
