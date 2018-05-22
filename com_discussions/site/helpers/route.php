@@ -10,3 +10,22 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Helper\RouteHelper;
+
+class DiscussionsHelperRoute extends RouteHelper
+{
+	/**
+	 * Fetches the list route
+	 *
+	 * @param   int $catid Category ID
+	 *
+	 * @return  string
+	 *
+	 * @since  1.0.0n
+	 */
+	public static function getListRoute($catid = 1)
+	{
+		return 'index.php?option=com_discussions&view=list&id=' . $catid;
+	}
+
+}

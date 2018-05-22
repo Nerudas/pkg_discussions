@@ -10,3 +10,81 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Layout\LayoutHelper;
+
+$app = Factory::getApplication();
+$doc = Factory::getDocument();
+
+HTMLHelper::_('behavior.formvalidator');
+HTMLHelper::_('behavior.keepalive');
+HTMLHelper::_('formbehavior.chosen', 'select');
+HTMLHelper::stylesheet('media/com_discussions/css/admin-category.min.css', array('version' => 'auto'));
+
+$doc->addScriptDeclaration('
+	Joomla.submitbutton = function(task)
+	{
+		if (task == "category.cancel" || document.formvalidator.isValid(document.getElementById("item-form")))
+		{
+			Joomla.submitform(task, document.getElementById("item-form"));
+		}
+	};
+');
+?>
+<form action="<?php echo Route::_('index.php?option=com_discussions&view=categories&id=' . $this->item->id); ?>"
+      method="post"
+      name="adminForm" id="item-form" class="form-validate" enctype="multipart/form-data">
+	<?php echo LayoutHelper::render('joomla.edit.title_alias', $this); ?>
+	<div class="form-horizontal">
+		<?php echo HTMLHelper::_('bootstrap.startTabSet', 'myTab', array('active' => 'general')); ?>
+		<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'general', Text::_('JGLOBAL_FIELDSET_CONTENT')); ?>
+		<div class="row-fluid">
+			<div class="span9">
+				<fieldset class="adminform">
+					<div class="row-fluid form-horizontal-desktop">
+
+						<div class="span3">
+							<h4><?php echo Text::_('COM_DISCUSSIONS_CATEGORY_ICON'); ?></h4>
+							<?php echo $this->form->getInput('icon'); ?>
+						</div>
+						<div class="span9">
+							<h4><?php echo Text::_('JTAG'); ?></h4>
+							<?php echo $this->form->getInput('tags'); ?>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+			<div class="span3">
+				<fieldset class="form-vertical">
+					<?php echo $this->form->renderFieldset('global'); ?>
+				</fieldset>
+			</div>
+		</div>
+		<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
+
+		<?php
+		echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'attribs', Text::_('JGLOBAL_FIELDSET_OPTIONS'));
+		echo $this->form->renderFieldset('attribs');
+		echo HTMLHelper::_('bootstrap.endTab');
+		?>
+
+		<?php echo HTMLHelper::_('bootstrap.addTab', 'myTab', 'publishing', Text::_('JGLOBAL_FIELDSET_PUBLISHING')); ?>
+		<div class="row-fluid form-horizontal-desktop">
+			<div class="span6">
+				<?php echo LayoutHelper::render('joomla.edit.publishingdata', $this); ?>
+			</div>
+			<div class="span6">
+				<?php echo LayoutHelper::render('joomla.edit.metadata', $this); ?>
+			</div>
+		</div>
+		<?php echo HTMLHelper::_('bootstrap.endTab'); ?>
+
+		<?php echo HTMLHelper::_('bootstrap.endTabSet'); ?>
+		<input type="hidden" name="task" value=""/>
+		<input type="hidden" name="return" value="<?php echo $app->input->getCmd('return'); ?>"/>
+		<?php echo HTMLHelper::_('form.token'); ?>
+	</div>
+</form>
