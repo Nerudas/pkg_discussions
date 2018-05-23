@@ -1,4 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
+	<fields name="filter">
+		<field name="search" type="text" hint="JSEARCH_FILTER"/>
+		<field name="published" type="list" onchange="this.form.submit();">
+			<option value="">JOPTION_SELECT_PUBLISHED</option>
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+			<option value="-2">JTRASHED</option>
+		</field>
+		<field name="access" type="accesslevel" onchange="this.form.submit();">
+			<option value="">JOPTION_SELECT_ACCESS</option>
+		</field>
+		<field name="created_by" type="user"/>
+		<field name="category" type="discussionscategory" onchange="this.form.submit();" default="">
+			<option value="">JOPTION_SELECT_CATEGORY</option>
+			<option value="without">COM_DISCUSSIONS_CATEGORY_WITHOUT</option>
+		</field>
+		<field name="region" type="regions" show_null="true" onchange="this.form.submit();"/>
+	</fields>
 
+	<fields name="list">
+		<field name="fullordering" type="list"
+			   onchange="this.form.submit();"
+			   default="t.created DESC">
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="t.title ASC">JGLOBAL_TITLE_ASC</option>
+			<option value="t.title DESC">JGLOBAL_TITLE_DESC</option>
+			<option value="t.access ASC">JGRID_HEADING_ACCESS_ASC</option>
+			<option value="t.access DESC">JGRID_HEADING_ACCESS_DESC</option>
+			<option value="t.id ASC">JGRID_HEADING_ID_ASC</option>
+			<option value="t.id DESC">JGRID_HEADING_ID_DESC</option>
+			<option value="region_name ASC">JGRID_HEADING_REGION_ASC</option>
+			<option value="region_name DESC">JGRID_HEADING_REGION_DESC</option>
+			<option value="t.state ASC">JSTATUS_ASC</option>
+			<option value="t.state DESC">JSTATUS_DESC</option>
+			<option value="t.hits ASC">JGLOBAL_HITS_ASC</option>
+			<option value="t.hits DESC">JGLOBAL_HITS_DESC</option>
+			<option value="t.created_by ASC">JAUTHOR_ASC</option>
+			<option value="t.created_by DESC">JAUTHOR_DESC</option>
+			<option value="t.created ASC">JDATE_ASC</option>
+			<option value="t.created DESC">JDATE_DESC</option>
+		</field>
+		<field name="limit" type="limitbox"
+			   class="inputbox input-mini"
+			   default="25"
+			   onchange="this.form.submit();"/>
+	</fields>
 </form>
