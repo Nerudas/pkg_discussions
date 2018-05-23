@@ -7,3 +7,47 @@
  * @link       https://nerudas.ru
  */
 
+[data-input-discussionscategories] .currents {
+	display: flex;
+	align-items: flex-start;
+	flex-wrap: wrap;
+}
+
+[data-input-discussionscategories] .actives {
+	display: inline-flex;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+[data-input-discussionscategories] .actives .item {
+	font-size: 14px;
+	white-space: nowrap;
+	padding: 5px 10px;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+	background-color: #333;
+	color: #fff;
+}
+
+[data-input-discussionscategories] .categories .item {
+	display: inline-block;
+	margin: 10px;
+	text-decoration: none;
+	color: #222;
+	cursor: pointer;
+	width: 120px;
+	vertical-align: top;
+}
+
+[data-input-discussionscategories] .categories .item.active {
+	opacity: 0.3;
+}
+
+[data-input-discussionscategories] .categories .item .title {
+	display: block;
+	font-size: 14px;
+	text-align: center;
+	padding: 3px;
+}

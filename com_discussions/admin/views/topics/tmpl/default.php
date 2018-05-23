@@ -19,7 +19,7 @@ use Joomla\CMS\Layout\LayoutHelper;
 HTMLHelper::_('bootstrap.tooltip');
 HTMLHelper::_('behavior.multiselect');
 HTMLHelper::_('formbehavior.chosen', 'select');
-HTMLHelper::stylesheet('media/com_topics/css/admin-topics.min.css', array('version' => 'auto'));
+HTMLHelper::stylesheet('media/com_discussions/css/admin-topics.min.css', array('version' => 'auto'));
 
 $app       = Factory::getApplication();
 $doc       = Factory::getDocument();
@@ -28,7 +28,7 @@ $userId    = $user->get('id');
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 
-$columns = 6;
+$columns = 9;
 
 ?>
 

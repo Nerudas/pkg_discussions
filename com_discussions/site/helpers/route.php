@@ -28,4 +28,31 @@ class DiscussionsHelperRoute extends RouteHelper
 		return 'index.php?option=com_discussions&view=list&id=' . $catid;
 	}
 
+	/**
+	 * Fetches the topic route
+	 *
+	 * @param   int $catid Category ID
+	 * @param   int $id    Item ID
+	 *
+	 * @return  string
+	 *
+	 * @since  1.0.0
+	 */
+	public static function getTopicRoute($id = null, $catid = 1)
+	{
+		$link = 'index.php?option=com_discussions&view=topic';
+		
+		if (!empty($id))
+		{
+			$link .= '&id=' . $id;
+		}
+
+		if (!empty($catid))
+		{
+			$link .= '&catid=' . $catid;
+		}
+
+		return $link;
+	}
+
 }
