@@ -74,7 +74,7 @@ class DiscussionsViewPosts extends HtmlView
 	 */
 	public function display($tpl = null)
 	{
-		DiscussionsHelper::addSubmenu('topics');
+		DiscussionsHelper::addSubmenu('posts');
 
 		$this->items         = $this->get('Items');
 		$this->pagination    = $this->get('Pagination');

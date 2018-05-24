@@ -45,7 +45,7 @@
 
 	<fieldset name="attribs" label="JGLOBAL_FIELDSET_OPTIONS">
 		<fields name="attribs">
-			<field name="item_layout" type="componentlayout"
+			<field name="topic_layout" type="componentlayout"
 				   label="JFIELD_ALT_LAYOUT_LABEL"
 				   description="JFIELD_ALT_COMPONENT_LAYOUT_DESCRIPTION"
 				   useglobal="true"
