@@ -31,15 +31,6 @@ class DiscussionsModelTopic extends AdminModel
 	protected $_categories = null;
 
 	/**
-	 * Profile contacts
-	 *
-	 * @var    array
-	 *
-	 * @since  1.0.0
-	 */
-	protected $_contacts = null;
-
-	/**
 	 * Imagefolder helper helper
 	 *
 	 * @var    new imageFolderHelper
@@ -289,7 +280,7 @@ class DiscussionsModelTopic extends AdminModel
 	 */
 	protected function loadFormData()
 	{
-		$data = Factory::getApplication()->getUserState('com_board.edit.item.data', array());
+		$data = Factory::getApplication()->getUserState('com_discussions.edit.topic.data', array());
 		if (empty($data))
 		{
 			$data = $this->getItem();
@@ -399,7 +390,7 @@ class DiscussionsModelTopic extends AdminModel
 				$this->imageFolderHelper->saveItemImages($id, $data['imagefolder'], '#__discussions_topics', 'images', $data['images']);
 			}
 
-			return true;
+			return $id;
 		}
 
 		return false;
@@ -423,6 +414,13 @@ class DiscussionsModelTopic extends AdminModel
 			{
 				$this->imageFolderHelper->deleteItemImageFolder($pk);
 			}
+
+			// Delete employees
+			$db    = Factory::getDbo();
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__services_items_employees'))
+				->where($db->quoteName('topic_id') . ' IN(' . implode(',', $pks) . ')');
+			$db->setQuery($query)->execute();
 
 			return true;
 		}

@@ -95,7 +95,7 @@ $columns = 7;
 						<td class="center">
 							<div class="btn-group">
 								<a class="btn btn-micro hasTooltip" title="<?php echo Text::_('JACTION_EDIT'); ?>"
-								   href="<?php echo Route::_('index.php?option=com_discussions&task=topic.edit&id=' . $item->id); ?>">
+								   href="<?php echo Route::_('index.php?option=com_discussions&task=post.edit&id=' . $item->id); ?>">
 									<span class="icon-apply icon-white"></span>
 								</a>
 								<?php echo HTMLHelper::_('jgrid.published', $item->state, $i, 'topics.', $canChange, 'cb'); ?>
@@ -112,7 +112,7 @@ $columns = 7;
 							<div>
 								<?php if ($canEdit) : ?>
 									<a class="hasTooltip" title="<?php echo Text::_('JACTION_EDIT'); ?>"
-									   href="<?php echo Route::_('index.php?option=com_discussions&task=topic.edit&id=' . $item->id); ?>">
+									   href="<?php echo Route::_('index.php?option=com_discussions&task=post.edit&id=' . $item->id); ?>">
 										<?php echo JHtmlString::truncate($this->escape($item->title), 100, false, false); ?>
 									</a>
 								<?php else : ?>
