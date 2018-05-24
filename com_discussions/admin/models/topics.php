@@ -312,16 +312,6 @@ class DiscussionsModelTopics extends ListModel
 	 *
 	 * @since  1.0.0
 	 */
-
-	/**
-	 * Method to get an array of category tags.
-	 *
-	 * @param int $pk category id
-	 *
-	 * @return  mixed  An array of data items on success, false on failure.
-	 *
-	 * @since  1.0.0
-	 */
 	public function getCategoryTags($pk = null)
 	{
 		$pk = (!empty($pk)) ? $pk : $this->getState('filter.category');

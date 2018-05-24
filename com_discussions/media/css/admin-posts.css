@@ -1,0 +1,46 @@
+/*
+ * @package    Discussions Component
+ * @version    1.0.0
+ * @author     Nerudas  - nerudas.ru
+ * @copyright  Copyright (c) 2013 - 2018 Nerudas. All rights reserved.
+ * @license    GNU/GPL license: http://www.gnu.org/copyleft/gpl.html
+ * @link       https://nerudas.ru
+ */
+
+#adminForm .author {
+	display: flex;
+	align-items: center;
+}
+
+#adminForm .author .avatar {
+	position: relative;
+	width: 30px;
+	height: 30px;
+	display: block;
+	margin-right: 5px;
+	background-position: 50% 50%;
+	background-size: cover;
+	border: 1px solid #e5e5e5;
+	border-radius: 1px;
+}
+
+#adminForm .author .avatar.online::after {
+	display: block;
+	content: '';
+	width: 8px;
+	height: 8px;
+	background: green;
+	border-left: 1px solid #FFF;
+	border-top: 1px solid #FFF;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+#adminForm .author .job a,
+#adminForm .author .job span {
+	color: #999;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	font-size: 10px;
+}
