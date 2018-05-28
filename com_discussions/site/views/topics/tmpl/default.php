@@ -10,3 +10,6 @@
 
 defined('_JEXEC') or die;
 
+//echo '<pre>', print_r($this->category, true), '</pre>';
+
+echo '<pre>', print_r($this->items, true), '</pre>';

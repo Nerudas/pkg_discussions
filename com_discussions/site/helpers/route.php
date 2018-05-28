@@ -15,7 +15,7 @@ use Joomla\CMS\Helper\RouteHelper;
 class DiscussionsHelperRoute extends RouteHelper
 {
 	/**
-	 * Fetches the list route
+	 * Fetches the topics route
 	 *
 	 * @param   int $catid Category ID
 	 *
@@ -23,9 +23,9 @@ class DiscussionsHelperRoute extends RouteHelper
 	 *
 	 * @since  1.0.0n
 	 */
-	public static function getListRoute($catid = 1)
+	public static function getTopicsRoute($catid = 1)
 	{
-		return 'index.php?option=com_discussions&view=list&id=' . $catid;
+		return 'index.php?option=com_discussions&view=topics&id=' . $catid;
 	}
 
 	/**
@@ -50,6 +50,32 @@ class DiscussionsHelperRoute extends RouteHelper
 		if (!empty($catid))
 		{
 			$link .= '&catid=' . $catid;
+		}
+
+		return $link;
+	}
+
+	/**
+	 * Fetches the form route
+	 *
+	 * @param  int $id       Item ID
+	 * @param  int $catid    Category ID
+	 * @param  int $category Default Category ID
+	 *
+	 * @return  string
+	 *
+	 * @since  1.0.0
+	 */
+	public static function getFormRoute($id = null, $catid = 1, $category = null)
+	{
+		$link = 'index.php?option=com_discussions&view=form&catid=' . $catid;
+		if (!empty($id))
+		{
+			$link .= '&id=' . $id;
+		}
+		if (!empty($category))
+		{
+			$link .= '&category=' . $category;
 		}
 
 		return $link;

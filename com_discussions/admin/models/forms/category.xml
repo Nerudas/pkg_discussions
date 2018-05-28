@@ -65,11 +65,11 @@
 	</fieldset>
 	<fields name="attribs" label="JGLOBAL_FIELDSET_OPTIONS">
 		<fieldset name="attribs" label="JGLOBAL_FIELDSET_OPTIONS">
-			<field name="list_layout" type="componentlayout"
-				   label="COM_DISCUSSIONS_PARAMS_LIST_LAYOUT"
+			<field name="topics_layout" type="componentlayout"
+				   label="COM_DISCUSSIONS_PARAMS_TOPICS_LAYOUT"
 				   useglobal="true"
 				   extension="com_discussions"
-				   view="list"/>
+				   view="topics"/>
 			<field name="search_placeholder" type="text"
 				   label="COM_DISCUSSIONS_PARAMS_SEARCH_PLACEHOLDER"
 				   class="input-xlarge"

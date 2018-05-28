@@ -125,7 +125,7 @@ class DiscussionsViewCategory extends HtmlView
 			JLoader::register('DiscussionsHelperRoute', JPATH_SITE . '/components/com_discussions/helpers/route.php');
 			$siteRouter = SiteApplication::getRouter();
 
-			$listLink = $siteRouter->build(DiscussionsHelperRoute::getListRoute($this->item->id))->toString();
+			$listLink = $siteRouter->build(DiscussionsHelperRoute::getTopicsRoute($this->item->id))->toString();
 			$listLink = str_replace('administrator/', '', $listLink);
 
 			$toolbar = JToolBar::getInstance('toolbar');

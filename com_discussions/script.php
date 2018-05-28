@@ -157,7 +157,7 @@ class com_DiscussionsInstallerScript
 		$category->field_mappings->common->asset_id             = 'null';
 		$category->field_mappings->special                      = new stdClass();
 		$category->field_mappings                               = json_encode($category->field_mappings);
-		$category->router                                       = 'DiscussionsHelperRoute::getListRoute';
+		$category->router                                       = 'DiscussionsHelperRoute::getTopicsRoute';
 		$category->content_history_options                      = '';
 
 		(!empty($current_id)) ? $db->updateObject('#__content_types', $category, 'type_id')

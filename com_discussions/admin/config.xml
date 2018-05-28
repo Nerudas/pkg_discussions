@@ -32,10 +32,10 @@
 			   label="COM_DISCUSSIONS_PARAMS_SEARCH_PLACEHOLDER"
 			   class="input-xlarge"
 			   size="40"/>
-		<field name="list_layout" type="componentlayout"
-			   label="COM_DISCUSSIONS_PARAMS_LIST_LAYOUT"
+		<field name="topics_layout" type="componentlayout"
+			   label="COM_DISCUSSIONS_PARAMS_TOPICS_LAYOUT"
 			   extension="com_discussions"
-			   view="list"/>
+			   view="topics"/>
 		<field name="topic_layout" type="componentlayout"
 			   label="COM_DISCUSSIONS_PARAMS_TOPIC_LAYOUT"
 			   extension="com_discussions"
