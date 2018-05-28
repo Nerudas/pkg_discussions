@@ -72,7 +72,7 @@ class DiscussionsModelPosts extends ListModel
 		$this->setState('filter.topic', $topic);
 
 		// List state information.
-		$ordering  = empty($ordering) ? 't.created' : $ordering;
+		$ordering  = empty($ordering) ? 'p.created' : $ordering;
 		$direction = empty($direction) ? 'desc' : $direction;
 		parent::populateState($ordering, $direction);
 	}
