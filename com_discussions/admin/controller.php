@@ -21,5 +21,5 @@ class DiscussionsController extends BaseController
 	 *
 	 * @since  1.0.0
 	 */
-	protected $default_view = 'topics';
+	protected $default_view = 'posts';
 }

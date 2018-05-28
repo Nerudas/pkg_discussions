@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `#__discussions_categories` (
 	`metadata`    MEDIUMTEXT   NOT NULL DEFAULT '',
 	`tags_search` MEDIUMTEXT   NOT NULL DEFAULT '',
 	`tags_map`    MEDIUMTEXT   NOT NULL DEFAULT '',
-	`item_tags`   MEDIUMTEXT   NOT NULL DEFAULT '',
+	`items_tags`  MEDIUMTEXT   NOT NULL DEFAULT '',
 	UNIQUE KEY `id` (`id`)
 )
 	ENGINE = MyISAM

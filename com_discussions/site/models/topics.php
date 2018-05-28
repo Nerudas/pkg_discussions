@@ -16,6 +16,9 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Helper\TagsHelper;
+use Joomla\Utilities\ArrayHelper;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Uri\Uri;
 
 class DiscussionsModelTopics extends ListModel
 {
@@ -27,6 +30,15 @@ class DiscussionsModelTopics extends ListModel
 	 * @since  1.0.0
 	 */
 	protected $_category = array();
+
+	/**
+	 * Authors data
+	 *
+	 * @var    object
+	 *
+	 * @since  1.0.0
+	 */
+	protected $_authors = array();
 
 	/**
 	 * Category parent data
@@ -136,6 +148,11 @@ class DiscussionsModelTopics extends ListModel
 		// Set id state
 		$pk = $app->input->getInt('id', 1);
 		$this->setState('category.id', $pk);
+
+		if ($pk > 1)
+		{
+			$this->setState('filter.category', $pk);
+		}
 
 		// Load the parameters. Merge Global and Menu Item params into new object
 		$params     = $app->getParams();
@@ -514,9 +531,47 @@ class DiscussionsModelTopics extends ListModel
 
 		if (!empty($items))
 		{
+			$topicsAuthors = ArrayHelper::getColumn($items, 'created_by');
+			$postsAuthors  = ArrayHelper::getColumn($items, 'last_post_created_by');
+			$authors       = $this->getAuthors(array_unique(array_merge($topicsAuthors, $postsAuthors)));
+			$user          = Factory::getUser();
+
 			foreach ($items as &$item)
 			{
-				$item->link = Route::_(DiscussionsHelperRoute::getTopicRoute($item->id));
+				$item->link     = Route::_(DiscussionsHelperRoute::getTopicRoute($item->id));
+				$item->editLink = false;
+				if (!$user->guest)
+				{
+					$userId = $user->id;
+					$asset  = 'com_discussions.topic.' . $item->id;
+
+					$editLink = Route::_(DiscussionsHelperRoute::getFormRoute($item->id));
+
+					// Check general edit permission first.
+					if ($user->authorise('core.edit', $asset))
+					{
+						$item->editLink = $editLink;
+					}
+					// Now check if edit.own is available.
+					elseif (!empty($userId) && $user->authorise('core.edit.own', $asset))
+					{
+						// Check for a valid user and that they are the owner.
+						if ($userId == $item->created_by)
+						{
+							$item->editLink = $editLink;
+						}
+					}
+				}
+				// Convert the images field to an array.
+				$registry     = new Registry($item->images);
+				$item->images = $registry->toArray();
+				$item->image  = (!empty($item->images) && !empty(reset($item->images)['src'])) ?
+					reset($item->images)['src'] : false;
+
+				$item->author = (isset($authors[$item->created_by])) ? $authors[$item->created_by] : false;
+
+				$item->last_post_author = (isset($authors[$item->last_post_created_by])) ?
+					$authors[$item->last_post_created_by] : false;
 
 				// Get Tags
 				$item->tags = new TagsHelper;
@@ -546,6 +601,93 @@ class DiscussionsModelTopics extends ListModel
 		return $this->getDbo()->loadObjectList('id');
 	}
 
+
+	/**
+	 * Method to get Authors
+	 *
+	 * @param array $pks User Ids
+	 *
+	 * @return  array
+	 *
+	 * @since 1.0.0
+	 */
+	protected function getAuthors($pks = array())
+	{
+		$pks = (!is_array($pks)) ? (array) $pks : array_unique($pks);
+
+		$authors = array();
+		if (!empty($pks))
+		{
+			$getAuthors = array();
+			foreach ($pks as $pk)
+			{
+				if (isset($this->_authors[$pk]))
+				{
+					$authors[$pk] = $this->_authors[$pk];
+				}
+				else
+				{
+					$getAuthors[] = $pk;
+				}
+			}
+
+			if (!empty($getAuthors))
+			{
+				try
+				{
+					$db           = Factory::getDbo();
+					$offline      = (int) ComponentHelper::getParams('com_profiles')->get('offline_time', 5) * 60;
+					$offline_time = Factory::getDate()->toUnix() - $offline;
+
+					$query = $db->getQuery(true)
+						->select(array(
+							'p.id as id',
+							'p.name as name',
+							'p.avatar as avatar',
+							'p.status as status',
+							'(s.time IS NOT NULL) AS online',
+							'(c.id IS NOT NULL) AS job',
+							'c.id as job_id',
+							'c.name as job_name',
+							'c.logo as job_logo',
+							'e.position as  position'
+						))
+						->from($db->quoteName('#__profiles', 'p'))
+						->join('LEFT', '#__session AS s ON s.userid = p.id AND s.time > ' . $offline_time)
+						->join('LEFT', '#__companies_employees AS e ON e.user_id = p.id AND ' .
+							$db->quoteName('e.key') . ' = ' . $db->quote(''))
+						->join('LEFT', '#__companies AS c ON c.id = e.company_id AND c.state = 1')
+						->join('LEFT', '#__users AS u ON u.id = p.id')
+						->where('u.block = 0')
+						->where('p.id IN (' . implode(',', $getAuthors) . ')');
+					$db->setQuery($query);
+					$objects = $db->loadObjectList('id');
+
+					foreach ($objects as $object)
+					{
+						$avatar           = (!empty($object->avatar) && JFile::exists(JPATH_ROOT . '/' . $object->avatar)) ?
+							$object->avatar : 'media/com_profiles/images/no-avatar.jpg';
+						$object->avatar   = Uri::root(true) . '/' . $avatar;
+						$object->link     = Route::_(ProfilesHelperRoute::getProfileRoute($object->id));
+						$object->job_logo = (!empty($object->job_logo) && JFile::exists(JPATH_ROOT . '/' . $object->job_logo)) ?
+							Uri::root(true) . '/' . $object->job_logo : false;
+						$object->job_link = Route::_(CompaniesHelperRoute::getCompanyRoute($object->job_id));
+
+						$authors[$object->id] = $object;
+
+						$this->_authors[$object->id] = $object;
+					}
+
+				}
+				catch (Exception $e)
+				{
+					$this->setError($e);
+				}
+			}
+		}
+
+		return $authors;
+	}
 
 	/**
 	 * Method to get an array of categorytags.

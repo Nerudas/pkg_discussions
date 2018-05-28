@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
+	<fields name="filter">
+		<field name="search" type="text"
+			   label="JSEARCH_FILTER"
+			   hint="JSEARCH_FILTER"/>
+		<field name="category" type="discussionscategory"
+			   label="COM_DISCUSSIONS_CATEGORY"
+			   links="true"/>
 
+		<!--<field name="allregions" type="checkbox" label="COM_DISCUSSIONS_ALLREGIONS" value="1"/>-->
+		<field name="onlymy" type="checkbox" label="COM_DISCUSSIONS_ONLYMY" value="1"/>
+	</fields>
 </form>
