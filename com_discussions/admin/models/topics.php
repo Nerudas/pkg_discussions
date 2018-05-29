@@ -325,7 +325,8 @@ class DiscussionsModelTopics extends ListModel
 					$db    = Factory::getDbo();
 					$query = $db->getQuery(true)
 						->select(array('c.id', 'c.items_tags'))
-						->from($db->quoteName('#__discussions_categories', 'c'));
+						->from($db->quoteName('#__discussions_categories', 'c'))
+						->where($db->quoteName('c.alias') . ' <> ' . $db->quote('root'));
 					if ($pk != 'without')
 					{
 						$query->join('LEFT', '#__discussions_categories as this ON c.lft > this.lft AND c.rgt < this.rgt')
