@@ -138,7 +138,7 @@ class DiscussionsViewTopic extends HtmlView
 		// Edit
 		else
 		{
-			if (!empty($this->item->context) || !empty($this->item->item_id))
+			if (!empty($this->item->context))
 			{
 				throw new NotAllowed(Text::_('JERROR_ALERTNOAUTHOR'), 403);
 			}

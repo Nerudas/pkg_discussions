@@ -540,7 +540,7 @@ class DiscussionsModelTopics extends ListModel
 			{
 				$item->link     = Route::_(DiscussionsHelperRoute::getTopicRoute($item->id));
 				$item->editLink = false;
-				if (!$user->guest)
+				if (!$user->guest && empty($item->context))
 				{
 					$userId = $user->id;
 					$asset  = 'com_discussions.topic.' . $item->id;
