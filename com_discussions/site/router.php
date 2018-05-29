@@ -34,10 +34,10 @@ class DiscussionsRouter extends RouterView
 		$topics->setKey('id')->setNestable();
 		$this->registerView($topics);
 
-		// Form route
-		$form = new RouterViewConfiguration('form');
-		$form->setKey('catid')->setParent($topics, 'catid');
-		$this->registerView($form);
+		// Topic Form  route
+		$topicForm = new RouterViewConfiguration('topicform');
+		$topicForm->setKey('catid')->setParent($topics, 'catid');
+		$this->registerView($topicForm );
 
 		// Topic route
 		$topic = new RouterViewConfiguration('topic');
@@ -112,7 +112,7 @@ class DiscussionsRouter extends RouterView
 	 *
 	 * @since  1.0.0
 	 */
-	public function getFormSegment($id, $query)
+	public function getTopicFormSegment($id, $query)
 	{
 		$catid = (!empty($query['catid'])) ? $query['catid'] : 1;
 		$name  = (!empty($query['id'])) ? 'edit' : 'add';
@@ -132,7 +132,6 @@ class DiscussionsRouter extends RouterView
 	 */
 	public function getTopicsId($segment, $query)
 	{
-
 		if (isset($query['id']))
 		{
 			$parent = $query['id'];
@@ -182,7 +181,7 @@ class DiscussionsRouter extends RouterView
 	 *
 	 * @since  1.0.0
 	 */
-	public function getFormId($segment, $query)
+	public function getTopicFormId($segment, $query)
 	{
 		if (in_array($segment, array('form', 'add', 'edit')))
 		{

@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Controller\AdminController;
 
-class BoardControllerCategories extends AdminController
+class DiscussionsControllerCategories extends AdminController
 {
 	/**
 	 * The prefix to use with controller messages.

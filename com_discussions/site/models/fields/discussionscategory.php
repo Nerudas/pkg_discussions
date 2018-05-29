@@ -59,7 +59,7 @@ class JFormFieldDiscussionsCategory extends JFormFieldList
 
 		$app       = Factory::getApplication();
 		$component = $app->input->get('option');
-		if (empty($this->value) && $app->isSite() && $component == 'com_board')
+		if (empty($this->value) && $app->isSite() && $component == 'com_discussions')
 		{
 			$this->value = $app->input->get('id', 1);
 		}

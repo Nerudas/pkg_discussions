@@ -1,4 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form>
 
+<form>
+	<fieldset>
+		<field name="title" type="text"
+			   label="JGLOBAL_TITLE"
+			   description="JFIELD_TITLE_DESC"
+			   class="input-xxlarge input-large-text"
+			   size="40"
+			   required="true"/>
+		<field name="text" type="editor"
+			   label="COM_DISCUSSIONS_TOPIC_TEXT"
+			   hint="COM_DISCUSSIONS_TOPIC_TEXT"
+			   filter="JComponentHelper::filterText"
+			   buttons="true"
+			   required="true"/>
+		<field name="tags" type="advtags"
+			   label="JTAG"
+			   description="JTAG_DESC"
+			   multiple="true"/>
+		<field name="images" type="ajaximage"
+			   multiple="true"
+			   unique="true"
+			   limit="5"
+			   label="COM_DISCUSSIONS_TOPIC_IMAGES"/>
+	</fieldset>
+
+
+	<fieldset name="hidden">
+		<field name="context" type="hidden" readonly="true"/>
+		<field name="item_id" type="hidden" readonly="true"/>
+		<field name="imagefolder" type="imagefolder" path="images/discussions/topics"/>
+		<field name="region" type="hidden"/>
+		<field name="state" type="hidden" default="1"/>
+		<field name="access" type="hidden" readonly="true"/>
+		<fields name="attribs">
+			<field name="item_layout" type="hidden" readonly="true" useglobal="true"/>
+		</fields>
+		<field name="created_by" type="hidden" readonly="true"/>
+		<field name="hits" type="hidden" readonly="true"/>
+		<field name="id" type="hidden" default="0" readonly="true"/>
+		<field name="category" type="hidden" default="0"/>
+		<field name="metakey" type="hidden" readonly="true"/>
+		<field name="metadesc" type="hidden" readonly="true"/>
+		<fields name="metadata">
+			<field name="robots" type="hidden" readonly="true"/>
+			<field name="author" type="hidden" readonly="true"/>
+			<field name="rights" type="hidden" readonly="true"/>
+			<field name="xreference" type="hidden" readonly="true"/>
+		</fields>
+	</fieldset>
 </form>

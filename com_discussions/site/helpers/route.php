@@ -66,9 +66,9 @@ class DiscussionsHelperRoute extends RouteHelper
 	 *
 	 * @since  1.0.0
 	 */
-	public static function getFormRoute($id = null, $catid = 1, $category = null)
+	public static function getTopicFormRoute($id = null, $catid = 1, $category = null)
 	{
-		$link = 'index.php?option=com_discussions&view=form&catid=' . $catid;
+		$link = 'index.php?option=com_discussions&view=topicform&catid=' . $catid;
 		if (!empty($id))
 		{
 			$link .= '&id=' . $id;

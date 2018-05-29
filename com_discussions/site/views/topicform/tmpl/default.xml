@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="COM_DISCUSSIONS_VIEW_TOPICFORM" option="COM_DISCUSSIONS_VIEW_TOPICFORM_DEFAULT_OPTION">
+		<message>
+			<![CDATA[COM_DISCUSSIONS_VIEW_TOPICFORM_DESCRIPTION]]>
+		</message>
+	</layout>
+	<fieldset name="request">
+		<fields name="request" addfieldpath="/administrator/components/com_discussions/models/fields">
+			<field name="catid" type="discussionscategory"
+				   label="COM_DISCUSSIONS_CATEGORY_PARENT"
+				   default="1"
+				   required="true">
+				<option value="1">JGLOBAL_ROOT</option>
+			</field>
+			<field name="category" type="discussionscategory"
+				   label="COM_DISCUSSIONS_TOPICFORM_DEFAULT_CATEGORY"
+				   default="">
+				<option value="">JNONE</option>
+			</field>
+			<field name="id" type="sql"
+				   label="COM_DISCUSSIONS_TOPIC"
+				   query="SELECT id, title FROM #__discussions_topics"
+				   key_field="id"
+				   value_field="title">
+				<option value="">JNONE</option>
+			</field>
+		</fields>
+		<fields name="params">
+			<field name="show_categories" type="hidden" default="1"/>
+		</fields>
+	</fieldset>
+
+
+</metadata>

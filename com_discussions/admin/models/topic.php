@@ -217,7 +217,7 @@ class DiscussionsModelTopic extends AdminModel
 		 * The front end calls this model and uses a_id to avoid id clashes so we need to check for that first.
 		 * The back end uses id so we use that the rest of the time and set it to 0 by default.
 		 */
-		$id   = ($this->getState('item.id')) ? $this->getState('topic.id') : $app->input->get('id', 0);
+		$id   = ($this->getState('topic.id')) ? $this->getState('topic.id') : $app->input->get('id', 0);
 		$user = Factory::getUser();
 
 		// Check for existing item.
@@ -418,7 +418,7 @@ class DiscussionsModelTopic extends AdminModel
 			// Delete employees
 			$db    = Factory::getDbo();
 			$query = $db->getQuery(true)
-				->delete($db->quoteName('#__services_items_employees'))
+				->delete($db->quoteName('#__discussions_posts'))
 				->where($db->quoteName('topic_id') . ' IN(' . implode(',', $pks) . ')');
 			$db->setQuery($query)->execute();
 

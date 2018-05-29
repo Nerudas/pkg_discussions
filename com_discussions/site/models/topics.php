@@ -277,7 +277,7 @@ class DiscussionsModelTopics extends ListModel
 
 				// Links
 				$data->link    = Route::_(DiscussionsHelperRoute::getTopicsRoute($data->id));
-				$data->addLink = Route::_(DiscussionsHelperRoute::getFormRoute());
+				$data->addLink = Route::_(DiscussionsHelperRoute::getTopicFormRoute());
 
 				// Convert parameter fields to objects.
 				$registry     = new Registry($data->attribs);
@@ -545,7 +545,7 @@ class DiscussionsModelTopics extends ListModel
 					$userId = $user->id;
 					$asset  = 'com_discussions.topic.' . $item->id;
 
-					$editLink = Route::_(DiscussionsHelperRoute::getFormRoute($item->id));
+					$editLink = Route::_(DiscussionsHelperRoute::getTopicFormRoute($item->id));
 
 					// Check general edit permission first.
 					if ($user->authorise('core.edit', $asset))
