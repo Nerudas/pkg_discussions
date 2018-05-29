@@ -100,9 +100,8 @@ class DiscussionsModelTopicForm extends DiscussionsModelTopic
 	 */
 	public function save($data)
 	{
-		if (parent::save($data))
+		if ($id = parent::save($data))
 		{
-			$id = $this->getState($this->getName() . '.id');
 			Factory::getApplication()->input->set('id', $id);
 
 			return $id;
