@@ -638,9 +638,9 @@ class DiscussionsModelTopic extends ListModel
 	 *
 	 * @since 1.0.0
 	 */
-	public function getPostFormModel()
+	protected function getPostFormModel()
 	{
-		BaseDatabaseModel::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_discussions/models', 'DiscussionsModel');
+		BaseDatabaseModel::addIncludePath(JPATH_SITE . '/components/com_discussions/models', 'DiscussionsModel');
 
 		return BaseDatabaseModel::getInstance('PostForm', 'DiscussionsModel', array('ignore_request' => true));
 	}

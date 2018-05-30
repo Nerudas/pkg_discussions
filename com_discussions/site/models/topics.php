@@ -531,6 +531,7 @@ class DiscussionsModelTopics extends ListModel
 
 		if (!empty($items))
 		{
+			JLoader::register('DiscussionsHelperTopic', JPATH_SITE . '/components/com_discussions/helpers/topic.php');
 			$topicsAuthors = ArrayHelper::getColumn($items, 'created_by');
 			$postsAuthors  = ArrayHelper::getColumn($items, 'last_post_created_by');
 			$authors       = $this->getAuthors(array_unique(array_merge($topicsAuthors, $postsAuthors)));
@@ -538,7 +539,9 @@ class DiscussionsModelTopics extends ListModel
 
 			foreach ($items as &$item)
 			{
-				$item->link     = Route::_(DiscussionsHelperRoute::getTopicRoute($item->id));
+				$item->link       = Route::_(DiscussionsHelperRoute::getTopicRoute($item->id));
+				$item->postsCount = DiscussionsHelperTopic::getPostsTotal($item->id);
+
 				$item->editLink = false;
 				if (!$user->guest && empty($item->context))
 				{
