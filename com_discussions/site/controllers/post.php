@@ -53,7 +53,14 @@ class DiscussionsControllerPost extends FormController
 		$data = $this->input->post->get('jform_post_' . $pk, array(), 'array');
 
 		$app->input->post->set('jform', $data);
-		parent::save($key, $urlVar);
+		if (!parent::save($key, $urlVar))
+		{
+			$app->setUserState('com_discussions.edit.post.data.' . $pk, $data);
+		}
+		else
+		{
+			$app->setUserState('com_discussions.edit.post.data.' . $pk, array());
+		}
 
 		// Get return
 		$post_id  = $app->input->getInt('post_id', $data['id']);

@@ -63,6 +63,11 @@ class DiscussionsModelPostForm extends DiscussionsModelPost
 		$id   = $this->getState('post.id', Factory::getApplication()->input->get('id', 0));
 		$form = $this->loadForm('com_topic.post.' . $id, 'post', array('control' => 'jform_post_' . $id, 'load_data' => $loadData));
 
+		if (!Factory::getUser()->guest)
+		{
+			$form->removeField('captcha');
+		}
+
 		return $form;
 	}
 
@@ -75,8 +80,12 @@ class DiscussionsModelPostForm extends DiscussionsModelPost
 	 */
 	protected function loadFormData()
 	{
-		$id   = $this->getState('post.id', Factory::getApplication()->input->get('id', 0));
-		$data = Factory::getApplication()->getUserState('com_discussions.edit.post.data.' . $id, array());
+		$pk = $this->getState('post.id', Factory::getApplication()->input->get('id', 0));
+		if (empty($pk))
+		{
+			$pk = $this->getState('topic.id', $app->input->getInt('topic_id', 0)) . '_0';
+		}
+		$data = Factory::getApplication()->getUserState('com_discussions.edit.post.data.' . $pk, array());
 		if (empty($data))
 		{
 			$data = $this->getItem();
