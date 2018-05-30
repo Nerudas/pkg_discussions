@@ -25,7 +25,7 @@ class DiscussionsViewTopics extends HtmlView
 	 *
 	 * @since  1.0.0
 	 */
-	protected $category;
+	protected $topic;
 
 	/**
 	 * The link to add form
@@ -130,9 +130,9 @@ class DiscussionsViewTopics extends HtmlView
 		}
 
 		// Create a shortcut for category.
-		$category          = $this->category;
-		$category->parent  = $this->parent;
-		$category->addLink = $this->addLink;
+		$topic          = $this->category;
+		$topic->parent  = $this->parent;
+		$topic->addLink = $this->addLink;
 
 		// Merge category params. If this is category view, menu params override category params
 		// Otherwise, category params override menu item params
@@ -145,7 +145,7 @@ class DiscussionsViewTopics extends HtmlView
 		{
 			$currentLink = $active->link;
 			// If the current view is the active item and an category view for this category, then the menu item params take priority
-			if (strpos($currentLink, 'view=topics') && strpos($currentLink, '&catid=' . (string) $category->id))
+			if (strpos($currentLink, 'view=topics') && strpos($currentLink, '&id=' . (string) $topic->id))
 			{
 				// Load layout from active query (in case it is an alternative menu item)
 				if (isset($active->query['layout']))
@@ -154,25 +154,25 @@ class DiscussionsViewTopics extends HtmlView
 				}
 
 				// Check for alternative layout of category
-				elseif ($layout = $category->params->get('topics_layout'))
+				elseif ($layout = $topic->params->get('topics_layout'))
 				{
 					$this->setLayout($layout);
 				}
 
-				// $category->params are the category params, $temp are the menu item params
+				// $topic->params are the category params, $temp are the menu item params
 				// Merge so that the menu item params take priority
-				$category->params->merge($temp);
+				$topic->params->merge($temp);
 			}
 			else
 			{
 				// Current view is not a single category, so the category params take priority here
 				// Merge the menu item params with the category params so that the category params take priority
-				$temp->merge($category->params);
-				$category->params = $temp;
+				$temp->merge($topic->params);
+				$topic->params = $temp;
 
 				// Check for alternative layouts (since we are not in a category menu item)
 				// category menu item layout takes priority over alt layout for an category
-				if ($layout = $category->params->get('topics_layout'))
+				if ($layout = $topic->params->get('topics_layout'))
 				{
 					$this->setLayout($layout);
 				}
@@ -181,12 +181,12 @@ class DiscussionsViewTopics extends HtmlView
 		else
 		{
 			// Merge so that category params take priority
-			$temp->merge($category->params);
-			$category->params = $temp;
+			$temp->merge($topic->params);
+			$topic->params = $temp;
 
 			// Check for alternative layouts (since we are not in a category menu item)
 			// category menu item layout takes priority over alt layout for an category
-			if ($layout = $category->params->get('topics_layout'))
+			if ($layout = $topic->params->get('topics_layout'))
 			{
 				$this->setLayout($layout);
 			}
@@ -197,7 +197,7 @@ class DiscussionsViewTopics extends HtmlView
 		 * - Deny access to logged users with 403 code
 		 * NOTE: we do not recheck for no access-view + show_noauth disabled ... since it was checked above
 		 */
-		if ($category->params->get('access-view') == false)
+		if ($topic->params->get('access-view') == false)
 		{
 			if ($user->get('guest'))
 			{
@@ -216,15 +216,15 @@ class DiscussionsViewTopics extends HtmlView
 		}
 
 		// Title for root category
-		if ($active && $category->root)
+		if ($active && $topic->root)
 		{
-			$category->title = $active->title;
+			$topic->title = $active->title;
 		}
 
 		// Set search placeholder
-		if ($category->params->get('search_placeholder', ''))
+		if ($topic->params->get('search_placeholder', ''))
 		{
-			$this->filterForm->setFieldAttribute('search', 'hint', $category->params->get('search_placeholder'), 'filter');
+			$this->filterForm->setFieldAttribute('search', 'hint', $topic->params->get('search_placeholder'), 'filter');
 		}
 
 		// Escape strings for HTML output
@@ -246,8 +246,8 @@ class DiscussionsViewTopics extends HtmlView
 	{
 		$app      = Factory::getApplication();
 		$pathway  = $app->getPathway();
-		$category = $this->category;
-		$url      = rtrim(URI::root(), '/') . $category->link;
+		$topic = $this->category;
+		$url      = rtrim(URI::root(), '/') . $topic->link;
 		$sitename = $app->get('sitename');
 		$menus    = $app->getMenu();
 		$menu     = $menus->getActive();
@@ -264,17 +264,17 @@ class DiscussionsViewTopics extends HtmlView
 		$title = $this->params->get('page_title', $sitename);
 
 		// If the menu item does not concern this contact
-		if ($menu && ($menu->query['option'] !== 'com_discussions' || $menu->query['view'] !== 'topics' || $id != $category->id))
+		if ($menu && ($menu->query['option'] !== 'com_discussions' || $menu->query['view'] !== 'topics' || $id != $topic->id))
 		{
-			if ($category->title)
+			if ($topic->title)
 			{
-				$title = $category->title;
+				$title = $topic->title;
 			}
 
 			$path   = array();
 			$path[] = array('title' => $title, 'link' => '');
 
-			$parent = $category->parent;
+			$parent = $topic->parent;
 			while ($parent && $parent->id > 1 &&
 				($menu->query['option'] !== 'com_discussions' || $menu->query['view'] === 'topics' || $id != $parent->id))
 			{
@@ -309,9 +309,9 @@ class DiscussionsViewTopics extends HtmlView
 		$this->document->setTitle($title);
 
 		// Set Meta Description
-		if (!empty($category->metadesc))
+		if (!empty($topic->metadesc))
 		{
-			$this->document->setDescription($category->metadesc);
+			$this->document->setDescription($topic->metadesc);
 		}
 		elseif ($this->params->get('menu-meta_description'))
 		{
@@ -319,9 +319,9 @@ class DiscussionsViewTopics extends HtmlView
 		}
 
 		// Set Meta Keywords
-		if (!empty($category->metakey))
+		if (!empty($topic->metakey))
 		{
-			$this->document->setMetadata('keywords', $category->metakey);
+			$this->document->setMetadata('keywords', $topic->metakey);
 		}
 		elseif ($this->params->get('menu-meta_keywords'))
 		{
@@ -329,9 +329,9 @@ class DiscussionsViewTopics extends HtmlView
 		}
 
 		// Set Meta Robots
-		if ($category->metadata->get('robots', ''))
+		if ($topic->metadata->get('robots', ''))
 		{
-			$this->document->setMetadata('robots', $category->metadata->get('robots', ''));
+			$this->document->setMetadata('robots', $topic->metadata->get('robots', ''));
 		}
 		elseif ($this->params->get('robots'))
 		{
@@ -339,21 +339,21 @@ class DiscussionsViewTopics extends HtmlView
 		}
 
 		// Set Meta Author
-		if ($app->get('MetaAuthor') == '1' && $category->metadata->get('author', ''))
+		if ($app->get('MetaAuthor') == '1' && $topic->metadata->get('author', ''))
 		{
-			$this->document->setMetaData('author', $category->metadata->get('author'));
+			$this->document->setMetaData('author', $topic->metadata->get('author'));
 		}
 
 		// Set Meta Rights
-		if ($category->metadata->get('rights', ''))
+		if ($topic->metadata->get('rights', ''))
 		{
-			$this->document->setMetaData('author', $category->metadata->get('rights'));
+			$this->document->setMetaData('author', $topic->metadata->get('rights'));
 		}
 
 		// Set Meta Image
-		if ($category->metadata->get('image', ''))
+		if ($topic->metadata->get('image', ''))
 		{
-			$this->document->setMetaData('image', URI::base() . $category->metadata->get('image'));
+			$this->document->setMetaData('image', URI::base() . $topic->metadata->get('image'));
 		}
 		elseif ($this->params->get('menu-meta_image', ''))
 		{

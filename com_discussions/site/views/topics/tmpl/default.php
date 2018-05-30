@@ -26,13 +26,17 @@ $filters = array_keys($this->filterForm->getGroup('filter'));
 	<button type="submit"><?php echo Text::_('JSEARCH_FILTER_SUBMIT'); ?></button>
 	<a href="<?php echo $this->category->link; ?>"><?php echo Text::_('JCLEAR'); ?></a>
 </form>
-<?php if (!empty($this->items))
-{
-	foreach ($this->items as $item)
-	{
-		echo '<pre>', print_r($item, true), '</pre>';
-	}
-}; ?>
+<?php if (!empty($this->items)): ?>
+	<?php foreach ($this->items as $item): ?>
+		<div>
+			<div>
+				<a href="<?php echo $item->link; ?>"><?php echo $item->title; ?></a>
+			</div>
+			<?php echo '<pre>', print_r($item, true), '</pre>'; ?>
+		</div>
+
+	<?php endforeach; ?>
+<?php endif; ?>
 
 
 <?php echo $this->pagination->getListFooter(); ?>

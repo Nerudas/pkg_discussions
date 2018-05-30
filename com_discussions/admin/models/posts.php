@@ -161,7 +161,6 @@ class DiscussionsModelPosts extends ListModel
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
-
 		if (is_numeric($published))
 		{
 			$query->where('t.state = ' . (int) $published);

@@ -30,6 +30,4 @@
 			<field name="show_categories" type="hidden" default="1"/>
 		</fields>
 	</fieldset>
-
-
 </metadata>

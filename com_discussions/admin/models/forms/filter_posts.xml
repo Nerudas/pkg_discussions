@@ -12,7 +12,8 @@
 			   label="COM_DISCUSSIONS_TOPICS"
 			   query="SELECT id, title FROM #__discussions_topics"
 			   key_field="id"
-			   value_field="title">
+			   value_field="title"
+			   onchange="this.form.submit();">
 			<option value="">COM_DISCUSSIONS_TOPIC_SELECT</option>
 		</field>
 		<field name="access" type="accesslevel" onchange="this.form.submit();">
