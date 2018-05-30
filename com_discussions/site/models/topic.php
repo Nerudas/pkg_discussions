@@ -17,6 +17,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Table\Table;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 
 class DiscussionsModelTopic extends ListModel
 {
@@ -28,6 +29,15 @@ class DiscussionsModelTopic extends ListModel
 	 * @since  1.0.0
 	 */
 	protected $_topic = array();
+
+	/**
+	 * Add PostForm data
+	 *
+	 * @var    object
+	 *
+	 * @since  1.0.0
+	 */
+	protected $_addPostForm = array();
 
 	/**
 	 * Post offset
@@ -161,7 +171,6 @@ class DiscussionsModelTopic extends ListModel
 
 		// Set limit & limitstart for query.
 		$this->setState('list.limit', $params->get('posts_limit', 10, 'uint'));
-		$this->setState('list.limit', 3);
 		$this->setState('list.start', $app->input->get('limitstart', 0, 'uint'));
 	}
 
@@ -201,9 +210,12 @@ class DiscussionsModelTopic extends ListModel
 
 		if (!isset($this->_category[$pk]))
 		{
-			$app           = Factory::getApplication();
+			$app  = Factory::getApplication();
+			$user = Factory::getUser();
+
 			$errorRedirect = Route::_(DiscussionsHelperRoute::getTopicsRoute());
 			$errorMsg      = Text::_('COM_DISCUSSIONS_ERROR_TOPIC_NOT_FOUND');
+
 			try
 			{
 				$db    = $this->getDbo();
@@ -248,7 +260,6 @@ class DiscussionsModelTopic extends ListModel
 				$db->setQuery($query);
 				$data = $db->loadObject();
 
-
 				if (empty($data))
 				{
 
@@ -257,10 +268,29 @@ class DiscussionsModelTopic extends ListModel
 					return false;
 				}
 
-
 				// Links
 				$data->link     = Route::_(DiscussionsHelperRoute::getTopicRoute($data->id));
-				$data->editLink = Route::_(DiscussionsHelperRoute::getTopicFormRoute($data->id));
+				$data->editLink = false;
+				if (!$user->guest)
+				{
+					$userId   = $user->id;
+					$asset    = 'com_discussions.topic.' . $data->id;
+					$editLink = Route::_(DiscussionsHelperRoute::getTopicFormRoute($data->id));
+					// Check general edit permission first.
+					if ($user->authorise('core.edit', $asset))
+					{
+						$data->editLink = $editLink;
+					}
+					// Now check if edit.own is available.
+					elseif (!empty($userId) && $user->authorise('core.edit.own', $asset))
+					{
+						// Check for a valid user and that they are the owner.
+						if ($userId == $data->created_by)
+						{
+							$data->editLink = $editLink;
+						}
+					}
+				}
 
 				// Convert parameter fields to objects.
 				$registry     = new Registry($data->attribs);
@@ -273,6 +303,7 @@ class DiscussionsModelTopic extends ListModel
 				// Convert metadata fields to objects.
 				$data->metadata = new Registry($data->metadata);
 
+				$data->posts = $this->getTotal();
 
 				$this->_topic[$pk] = $data;
 			}
@@ -379,10 +410,56 @@ class DiscussionsModelTopic extends ListModel
 
 		if (!empty($items))
 		{
-
+			$user = Factory::getUser();
 			foreach ($items as &$item)
 			{
-				$item->form = '';
+
+				$item->editLink = false;
+				if (!$user->guest && empty($item->context))
+				{
+					$userId = $user->id;
+					$asset  = 'com_discussions.post.' . $item->id;
+
+					$editLink = Route::_(DiscussionsHelperRoute::getPostFormRoute($item->id, $item->topic_id));
+
+					// Check general edit permission first.
+					if ($user->authorise('core.edit', $asset))
+					{
+						$item->editLink = $editLink;
+					}
+					// Now check if edit.own is available.
+					elseif (!empty($userId) && $user->authorise('core.edit.own', $asset))
+					{
+						// Check for a valid user and that they are the owner.
+						if ($userId == $item->created_by)
+						{
+							$item->editLink = $editLink;
+						}
+					}
+				}
+				if ($item->editLink)
+				{
+					$formModel = $this->getPostFormModel();
+					$formModel->setState('post.id', $item->id);
+					$item->form = $formModel->getForm();
+					if ($item->form)
+					{
+						$item->form->bind($item);
+					}
+				}
+
+				$item->text = nl2br($item->text);
+				preg_match_all('/https?\:\/\/[^\" ]+/i', $item->text, $links);
+				if (!empty($links[0]))
+				{
+					foreach ($links[0] as $link)
+					{
+						$url  = $link;
+						$text = mb_strimwidth(str_replace(array('http://', 'https://'), '', $link), 0, 50, '...');
+
+						$item->text = str_replace($link, '<a href="' . $url . '" target="_blank">' . $text . '</a>', $item->text);
+					}
+				}
 			}
 		}
 
@@ -420,12 +497,10 @@ class DiscussionsModelTopic extends ListModel
 		$start = parent::getStart();
 
 		return (!empty($start)) ? $start : $this->getTopicStart();
-
 	}
 
 	/**
 	 * Method to get post offset
-	 *
 	 *
 	 * @return int
 	 * @since  1.0.0
@@ -552,4 +627,60 @@ class DiscussionsModelTopic extends ListModel
 		return true;
 	}
 
+
+	/**
+	 * Method to get PostForm Model
+	 *
+	 * @return bool|JModelLegacy
+	 *
+	 * @since 1.0.0
+	 */
+	public function getPostFormModel()
+	{
+		BaseDatabaseModel::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_discussions/models', 'DiscussionsModel');
+
+		return BaseDatabaseModel::getInstance('PostForm', 'DiscussionsModel', array('ignore_request' => true));
+	}
+
+	/**
+	 * Method to get topic add Post Form
+	 *
+	 * @param   integer $pk The id of the type.
+	 *
+	 * @return  mixed object|false
+	 *
+	 * @since  1.0.0
+	 */
+
+	public function getAddPostForm($pk = null)
+	{
+		$pk = (!empty($pk)) ? $pk : (int) $this->getState('topic.id');
+		if (!isset($this->_addPostForm[$pk]))
+		{
+			$user             = Factory::getUser();
+			$result           = array();
+			$result['action'] = '';
+			$result['form']   = false;
+
+			if ($user->authorise('core.create', 'com_discussions.post') || $user->authorise('post.create', 'com_discussions.post'))
+			{
+				$result['action'] = Route::_(DiscussionsHelperRoute::getPostFormRoute(0, $pk));
+
+				$formModel = $this->getPostFormModel();
+				$formModel->setState('post.id', $pk . '_0');
+				$form = $formModel->getForm();
+				if ($form)
+				{
+					$form->setValue('id', '', 0);
+					$form->setValue('topic_id', '', $pk);
+
+					$result['form'] = $form;
+				}
+				$this->_addPostForm[$pk] = $result;
+			}
+		}
+
+		return $this->_addPostForm[$pk];
+
+	}
 }

@@ -34,15 +34,21 @@ class DiscussionsRouter extends RouterView
 		$topics->setKey('id')->setNestable();
 		$this->registerView($topics);
 
-		// Topic Form  route
+		// Topic Form route
 		$topicForm = new RouterViewConfiguration('topicform');
 		$topicForm->setKey('catid')->setParent($topics, 'catid');
-		$this->registerView($topicForm );
+		$this->registerView($topicForm);
 
 		// Topic route
 		$topic = new RouterViewConfiguration('topic');
 		$topic->setKey('id')->setParent($topics, 'catid');
 		$this->registerView($topic);
+
+		// Post Form route
+		$postForm = new RouterViewConfiguration('postform');
+		$postForm->setKey('topic_id')->setParent($topic, 'topic_id');
+		$this->registerView($postForm);
+
 
 		parent::__construct($app, $menu);
 
@@ -121,6 +127,24 @@ class DiscussionsRouter extends RouterView
 	}
 
 	/**
+	 * Method to get the segment(s) for form view
+	 *
+	 * @param   string $id    ID of the form to retrieve the segments for
+	 * @param   array  $query The request that is built right now
+	 *
+	 * @return  array|string  The segments of this item
+	 *
+	 * @since  1.0.0
+	 */
+	public function getPostFormSegment($id, $query)
+	{
+		$catid = (!empty($query['catid'])) ? $query['catid'] : 1;
+		$name  = (!empty($query['id'])) ? 'post-edit' : 'post-add';
+
+		return array($catid => $name);
+	}
+
+	/**
 	 * Method to get the id for a topics
 	 *
 	 * @param   string $segment Segment to retrieve the ID for
@@ -172,7 +196,7 @@ class DiscussionsRouter extends RouterView
 	}
 
 	/**
-	 * Method to get the id for form view
+	 * Method to get the id for topic form view
 	 *
 	 * @param   string $segment Segment to retrieve the ID for
 	 * @param   array  $query   The request that is parsed right now
@@ -184,6 +208,28 @@ class DiscussionsRouter extends RouterView
 	public function getTopicFormId($segment, $query)
 	{
 		if (in_array($segment, array('form', 'add', 'edit')))
+		{
+			$catid = (!empty($query['catid'])) ? $query['catid'] : 1;
+
+			return (int) $catid;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Method to get the id for post form view
+	 *
+	 * @param   string $segment Segment to retrieve the ID for
+	 * @param   array  $query   The request that is parsed right now
+	 *
+	 * @return  mixed   The id of this item or false
+	 *
+	 * @since  1.0.0
+	 */
+	public function getPostFormId($segment, $query)
+	{
+		if (in_array($segment, array('post-form', 'post-add', 'post-edit')))
 		{
 			$catid = (!empty($query['catid'])) ? $query['catid'] : 1;
 

@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-
+	<fieldset>
+		<field name="text" type="textarea"
+			   label="COM_DISCUSSIONS_POST_TEXT"
+			   hint="COM_DISCUSSIONS_POST_TEXT"
+			   filter="text"
+			   rows="5"
+			   class="span12"
+			   required="true"/>
+		<field name="captcha" type="captcha" validate="captcha"
+			   label="COM_DISCUSSIONS_POST_CAPTCHA">
+		</field>
+	</fieldset>
+	<fieldset name="hidden">
+		<field name="topic_id" type="hidden" required="true" readonly="true"/>
+		<field name="state" type="hidden" default="1"/>
+		<field name="access" type="hidden" readonly="true"/>
+		<field name="created_by" type="hidden" readonly="true"/>
+		<field name="created" type="hidden" readonly="true"/>
+		<field name="id" type="hidden" default="0" readonly="true"/>
+	</fieldset>
 </form>

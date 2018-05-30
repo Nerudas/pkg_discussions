@@ -41,7 +41,7 @@ class DiscussionsHelperRoute extends RouteHelper
 	public static function getTopicRoute($id = null, $catid = 1)
 	{
 		$link = 'index.php?option=com_discussions&view=topic';
-		
+
 		if (!empty($id))
 		{
 			$link .= '&id=' . $id;
@@ -81,4 +81,25 @@ class DiscussionsHelperRoute extends RouteHelper
 		return $link;
 	}
 
+	/**
+	 * Fetches the form route
+	 *
+	 * @param  int $id       Item ID
+	 * @param  int $topic_id Topic ID
+	 * @param  int $catid    Category ID
+	 *
+	 * @return  string
+	 *
+	 * @since  1.0.0
+	 */
+	public static function getPostFormRoute($id = null, $topic_id, $catid = 1)
+	{
+		$link = 'index.php?option=com_discussions&view=postform&topic_id=' . $topic_id . '&catid=' . $catid;
+		if (!empty($id))
+		{
+			$link .= '&id=' . $id;
+		}
+
+		return $link;
+	}
 }

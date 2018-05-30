@@ -34,9 +34,10 @@
 		<field name="state" type="hidden" default="1"/>
 		<field name="access" type="hidden" readonly="true"/>
 		<fields name="attribs">
-			<field name="item_layout" type="hidden" readonly="true" useglobal="true"/>
+			<field name="topic_layout" type="hidden" readonly="true" useglobal="true"/>
 		</fields>
 		<field name="created_by" type="hidden" readonly="true"/>
+		<field name="created" type="hidden" readonly="true"/>
 		<field name="hits" type="hidden" readonly="true"/>
 		<field name="id" type="hidden" default="0" readonly="true"/>
 		<field name="category" type="hidden" default="0"/>

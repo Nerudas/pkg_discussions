@@ -77,16 +77,18 @@ class DiscussionsViewTopic extends HtmlView
 	 */
 	public function display($tpl = null)
 	{
-		$app  = Factory::getApplication();
-		$user = Factory::getUser();
+		$app        = Factory::getApplication();
+		$user       = Factory::getUser();
 		$dispatcher = JEventDispatcher::getInstance();
 
-		$this->state      = $this->get('State');
-		$this->topic      = $this->get('Topic');
-		$this->editLink   = $this->topic->editLink;
-		$this->link       = $this->topic->link;
-		$this->items      = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
+		$this->state       = $this->get('State');
+		$this->topic       = $this->get('Topic');
+		$this->editLink    = $this->topic->editLink;
+		$this->addPostForm = $this->get('AddPostForm');
+		$this->link        = $this->topic->link;
+		$this->items       = $this->get('Items');
+		$this->pagination  = $this->get('Pagination');
+		$this->total       = $this->get('Total');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))

@@ -73,7 +73,7 @@ class DiscussionsModelPost extends AdminModel
 		 * The front end calls this model and uses a_id to avoid id clashes so we need to check for that first.
 		 * The back end uses id so we use that the rest of the time and set it to 0 by default.
 		 */
-		$id   = ($this->getState('item.id')) ? $this->getState('topic.id') : $app->input->get('id', 0);
+		$id   = ($this->getState('post.id')) ? $this->getState('post.id') : $app->input->get('id', 0);
 		$user = Factory::getUser();
 
 		// Check for existing item.
