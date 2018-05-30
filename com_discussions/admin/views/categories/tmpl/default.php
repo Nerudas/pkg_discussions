@@ -38,8 +38,9 @@ $columns = 6;
 
 ?>
 
-<form action="<?php echo Route::_('index.php?option=com_discussions&view=categories'); ?>" method="post" name="adminForm"
-      id="adminForm">
+<form action="<?php echo Route::_('index.php?option=com_discussions&view=categories'); ?>" method="post"
+	  name="adminForm"
+	  id="adminForm">
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -120,8 +121,8 @@ $columns = 6;
 					}
 					?>
 					<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->parent_id; ?>"
-					    item-id="<?php echo $item->id ?>" parents="<?php echo $parentsStr ?>"
-					    level="<?php echo $item->level ?>">
+						item-id="<?php echo $item->id ?>" parents="<?php echo $parentsStr ?>"
+						level="<?php echo $item->level ?>">
 						<td class="order nowrap center hidden-phone">
 							<?php
 							$iconClass = '';
@@ -135,10 +136,10 @@ $columns = 6;
 							}
 							?>
 							<span class="sortable-handler<?php echo $iconClass ?>"><span
-									class="icon-menu"></span></span>
+										class="icon-menu"></span></span>
 							<?php if ($canChange && $saveOrder) : ?>
 								<input type="text" style="display:none" name="order[]" size="5"
-								       value="<?php echo $orderkey + 1; ?>"/>
+									   value="<?php echo $orderkey + 1; ?>"/>
 							<?php endif; ?>
 						</td>
 						<td class="center">

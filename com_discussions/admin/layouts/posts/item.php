@@ -18,7 +18,7 @@ $item = $displayData;
 <div>
 	<div><?php echo $item->id; ?></div>
 	<div><?php echo $item->text; ?></div>
-	<?php //echo '<pre>', print_r($item, true), '</pre>'; ?>
+	<?php echo '<pre>', print_r($item, true), '</pre>'; ?>
 	<div>
 		<?php
 		$data           = array();

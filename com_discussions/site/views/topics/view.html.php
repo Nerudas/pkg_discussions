@@ -246,7 +246,7 @@ class DiscussionsViewTopics extends HtmlView
 	{
 		$app      = Factory::getApplication();
 		$pathway  = $app->getPathway();
-		$topic = $this->category;
+		$topic    = $this->category;
 		$url      = rtrim(URI::root(), '/') . $topic->link;
 		$sitename = $app->get('sitename');
 		$menus    = $app->getMenu();

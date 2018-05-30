@@ -34,8 +34,8 @@ $doc->addScriptDeclaration('
 ');
 ?>
 <form action="<?php echo Route::_('index.php?option=com_discussions&view=post&id=' . $this->item->id); ?>"
-      method="post"
-      name="adminForm" id="item-form" class="form-validate" enctype="multipart/form-data">
+	  method="post"
+	  name="adminForm" id="item-form" class="form-validate" enctype="multipart/form-data">
 	<div class="form-horizontal">
 		<?php echo HTMLHelper::_('bootstrap.startTabSet', 'myTab', array('active' => 'general')); ?>
 

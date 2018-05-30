@@ -33,7 +33,7 @@ $columns = 9;
 ?>
 
 <form action="<?php echo Route::_('index.php?option=com_discussions&view=topics'); ?>" method="post" name="adminForm"
-      id="adminForm">
+	  id="adminForm">
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -138,7 +138,7 @@ $columns = 9;
 							<?php if ((int) $item->created_by != 0) : ?>
 								<div class="author">
 									<div class="avatar<?php echo ($item->author_online) ? ' online' : '' ?>"
-									     style="background-image: url('<?php echo $item->author_avatar; ?>')">
+										 style="background-image: url('<?php echo $item->author_avatar; ?>')">
 									</div>
 									<div>
 										<div class="name">

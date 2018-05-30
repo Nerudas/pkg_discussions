@@ -32,14 +32,14 @@ foreach ($this->categories as $category)
 ?>
 
 <form action="<?php echo Route::_(DiscussionsHelperRoute::getTopicFormRoute()); ?>"
-      method="get">
+	  method="get">
 	<ul>
 		<?php foreach ($root as $item): ?>
 			<li>
 				<div>
 					<label for="category_<?php echo $item->id; ?>">
 						<input id="category_<?php echo $item->id; ?>" type="radio" name="category"
-						       value="<?php echo $item->id; ?>" onchange="this.form.submit();" style="display: none;">
+							   value="<?php echo $item->id; ?>" onchange="this.form.submit();" style="display: none;">
 						<?php echo $item->title; ?>
 					</label>
 				</div>
@@ -50,8 +50,8 @@ foreach ($this->categories as $category)
 								<div>
 									<label for="category_<?php echo $child->id; ?>">
 										<input id="category_<?php echo $child->id; ?>" type="radio" name="category"
-										       value="<?php echo $child->id; ?>" onchange="this.form.submit();"
-										       style="display: none;">
+											   value="<?php echo $child->id; ?>" onchange="this.form.submit();"
+											   style="display: none;">
 										<?php echo $child->title; ?>
 									</label>
 								</div>
