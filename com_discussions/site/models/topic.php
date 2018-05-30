@@ -135,7 +135,6 @@ class DiscussionsModelTopic extends ListModel
 		$post_id = $app->input->getInt('post_id', 0);
 		$this->setState('post.id', $post_id);
 
-
 		// Load the parameters. Merge Global and Menu Item params into new object
 		$params     = $app->getParams();
 		$menuParams = new Registry;
@@ -378,7 +377,7 @@ class DiscussionsModelTopic extends ListModel
 			if (is_numeric($published))
 			{
 				$query->where('( p.state = ' . (int) $published .
-					' OR ( p.created_by = ' . $user->id . ' AND p.state IN (0,1)))');
+					' OR (p.created_by > 0 AND p.created_by = ' . $user->id . ' AND p.state IN (0,1)))');
 			}
 			elseif (is_array($published))
 			{

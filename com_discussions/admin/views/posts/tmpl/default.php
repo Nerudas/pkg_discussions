@@ -84,8 +84,8 @@ $columns = 7;
 				<tbody>
 
 				<?php foreach ($this->items as $i => $item) :
-					$canEdit = $user->authorise('core.edit', '#_discussions_topics.' . $item->id);
-					$canChange = $user->authorise('core.edit.state', '#__discussions_topics' . $item->id);
+					$canEdit = $user->authorise('core.edit', '#_discussions_posts.' . $item->id);
+					$canChange = $user->authorise('core.edit.state', '#__discussions_posts' . $item->id);
 					$item->title = JHtmlString::truncate($item->text, 100, false, false)
 					?>
 					<tr item-id="<?php echo $item->id ?>">
@@ -98,11 +98,11 @@ $columns = 7;
 								   href="<?php echo Route::_('index.php?option=com_discussions&task=post.edit&id=' . $item->id); ?>">
 									<span class="icon-apply icon-white"></span>
 								</a>
-								<?php echo HTMLHelper::_('jgrid.published', $item->state, $i, 'topics.', $canChange, 'cb'); ?>
+								<?php echo HTMLHelper::_('jgrid.published', $item->state, $i, 'posts.', $canChange, 'cb'); ?>
 								<?php
 								if ($canChange)
 								{
-									HTMLHelper::_('actionsdropdown.' . ((int) $item->state === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'topics');
+									HTMLHelper::_('actionsdropdown.' . ((int) $item->state === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'posts');
 									echo HTMLHelper::_('actionsdropdown.render', $this->escape($item->title));
 								}
 								?>

@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\CMS\Factory;
 
 class DiscussionsHelperTopic
 {
@@ -64,6 +65,25 @@ class DiscussionsHelperTopic
 	{
 		BaseDatabaseModel::addIncludePath(JPATH_SITE . '/components/com_discussions/models', 'DiscussionsModel');
 
-		return BaseDatabaseModel::getInstance('Topic', 'DiscussionsModel', array('ignore_request' => true));
+		$model = BaseDatabaseModel::getInstance('Topic', 'DiscussionsModel', array('ignore_request' => true));
+		$user  = Factory::getUser();
+
+		// Published state
+		$asset = 'com_discussions';
+		if ($pk)
+		{
+			$asset .= '.topic.' . $pk;
+		}
+		if ((!$user->authorise('core.edit.state', $asset)) && (!$user->authorise('core.edit', $asset)))
+		{
+			// Limit to published for people who can't edit or edit.state.
+			$model->setState('filter.published', 1);
+		}
+		else
+		{
+			$model->setState('filter.published', array(0, 1));
+		}
+
+		return $model;
 	}
 }
