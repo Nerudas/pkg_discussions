@@ -410,7 +410,8 @@ class DiscussionsModelTopic extends ListModel
 
 		if (!empty($items))
 		{
-			$user = Factory::getUser();
+			$user   = Factory::getUser();
+			$active = $this->getState('post.id', Factory::getApplication()->input->get('post_id'));
 			foreach ($items as &$item)
 			{
 
@@ -447,6 +448,8 @@ class DiscussionsModelTopic extends ListModel
 						$item->form->bind($item);
 					}
 				}
+
+				$item->active = ($item->id == $active);
 
 				$item->text = nl2br($item->text);
 				preg_match_all('/https?\:\/\/[^\" ]+/i', $item->text, $links);
