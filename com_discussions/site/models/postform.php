@@ -107,7 +107,10 @@ class DiscussionsModelPostForm extends DiscussionsModelPost
 	public function save($data)
 	{
 		$app = Factory::getApplication();
-		$app->input->set('post_id', $data['post_id']);
+
+		$data['id'] = (isset($data['id'])) ? $data['id'] : 0;
+
+		$app->input->set('post_id', $data['id']);
 		$app->input->set('topic_id', $data['topic_id']);
 
 		if ($id = parent::save($data))

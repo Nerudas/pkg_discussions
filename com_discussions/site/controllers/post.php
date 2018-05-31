@@ -14,6 +14,7 @@ use Joomla\CMS\MVC\Controller\FormController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Language\Text;
 
 class DiscussionsControllerPost extends FormController
 {
@@ -60,6 +61,7 @@ class DiscussionsControllerPost extends FormController
 		else
 		{
 			$app->setUserState('com_discussions.edit.post.data.' . $pk, array());
+			$this->setMessage(Text::_($this->text_prefix . (($data['id'] == 0) ? '_SUBMIT' : '') . '_SAVE_SUCCESS'));
 		}
 
 		// Get return

@@ -138,10 +138,10 @@ class DiscussionsRouter extends RouterView
 	 */
 	public function getPostFormSegment($id, $query)
 	{
-		$catid = (!empty($query['catid'])) ? $query['catid'] : 1;
-		$name  = (!empty($query['id'])) ? 'post-edit' : 'post-add';
+		$topic_id = (!empty($query['topic_id'])) ? $query['topic_id'] : 1;
+		$name     = (!empty($query['id'])) ? 'post-edit' : 'post-add';
 
-		return array($catid => $name);
+		return array($topic_id => $name);
 	}
 
 	/**
@@ -231,9 +231,9 @@ class DiscussionsRouter extends RouterView
 	{
 		if (in_array($segment, array('post-form', 'post-add', 'post-edit')))
 		{
-			$catid = (!empty($query['catid'])) ? $query['catid'] : 1;
+			$topic_id = (!empty($query['id'])) ? $query['id'] : 1;
 
-			return (int) $catid;
+			return (int) $topic_id;
 		}
 
 		return false;
