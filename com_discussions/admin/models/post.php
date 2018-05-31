@@ -135,7 +135,7 @@ class DiscussionsModelPost extends AdminModel
 			$data['created'] = Factory::getDate()->toSql();
 		}
 
-		if (empty($data['created_by']))
+		if (!isset($data['created_by']))
 		{
 			$data['created_by'] = Factory::getUser()->id;
 		}
