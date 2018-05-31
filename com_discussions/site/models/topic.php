@@ -18,6 +18,8 @@ use Joomla\Registry\Registry;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Helper\TagsHelper;
 
 class DiscussionsModelTopic extends ListModel
 {
@@ -296,13 +298,33 @@ class DiscussionsModelTopic extends ListModel
 				$data->params = clone $this->getState('params');
 				$data->params->merge($registry);
 
+				// Get Tags
+				$data->tags = new TagsHelper;
+				$data->tags->getItemTags('com_discussions.topic', $data->id);
+
+				// Convert the images field to an array.
+				$registry     = new Registry($data->images);
+				$data->images = $registry->toArray();
+				$data->image  = (!empty($data->images) && !empty(reset($data->images)['src'])) ?
+					reset($data->images)['src'] : false;
+
 				// If no access, the layout takes some responsibility for display of limited information.
 				$data->params->set('access-view', in_array($data->access, Factory::getUser()->getAuthorisedViewLevels()));
 
 				// Convert metadata fields to objects.
 				$data->metadata = new Registry($data->metadata);
 
-				$data->posts = $this->getTotal();
+				$data->postsCount = $this->getTotal();
+
+				// Prepare author data
+				$author_avatar         = (!empty($data->author_avatar) && JFile::exists(JPATH_ROOT . '/' . $data->author_avatar)) ?
+					$data->author_avatar : 'media/com_profiles/images/no-avatar.jpg';
+				$data->author_avatar   = Uri::root(true) . '/' . $author_avatar;
+				$data->author_link     = Route::_(ProfilesHelperRoute::getProfileRoute($data->author_id));
+				$data->author_job_logo = (!empty($data->author_job_logo) && JFile::exists(JPATH_ROOT . '/' . $data->author_job_logo)) ?
+					Uri::root(true) . '/' . $data->author_job_logo : false;
+				$data->author_job_link = Route::_(CompaniesHelperRoute::getCompanyRoute($data->author_job_id));
+
 
 				$this->_topic[$pk] = $data;
 			}
@@ -446,6 +468,7 @@ class DiscussionsModelTopic extends ListModel
 						}
 					}
 				}
+				$item->form = false;
 				if ($item->editLink)
 				{
 					$formModel = $this->getPostFormModel();
@@ -692,6 +715,5 @@ class DiscussionsModelTopic extends ListModel
 		}
 
 		return $this->_addPostForm[$pk];
-
 	}
 }

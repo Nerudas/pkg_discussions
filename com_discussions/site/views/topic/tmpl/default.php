@@ -19,6 +19,7 @@ use Joomla\CMS\Layout\LayoutHelper;
 <?php //echo '<pre>', print_r($this->topic, true), '</pre>'; ?>
 <?php
 $data               = array();
+$data['topic_id']   = $this->topic->id;
 $data['items']      = $this->items;
 $data['total']      = $this->total;
 $data['pagination'] = $this->pagination;

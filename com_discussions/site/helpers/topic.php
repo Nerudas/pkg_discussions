@@ -70,10 +70,6 @@ class DiscussionsHelperTopic
 
 		// Published state
 		$asset = 'com_discussions';
-		if ($pk)
-		{
-			$asset .= '.topic.' . $pk;
-		}
 		if ((!$user->authorise('core.edit.state', $asset)) && (!$user->authorise('core.edit', $asset)))
 		{
 			// Limit to published for people who can't edit or edit.state.

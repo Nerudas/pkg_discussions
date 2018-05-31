@@ -179,7 +179,7 @@ class DiscussionsViewTopic extends HtmlView
 				return false;
 			}
 		}
-
+		$offset = $app->input->getUInt('limitstart');
 		// Process the content plugins.
 		PluginHelper::importPlugin('content');
 		$dispatcher->trigger('onContentPrepare', array('com_discussions.topic', &$topic, &$topic->params, $offset));
