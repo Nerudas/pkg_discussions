@@ -539,10 +539,11 @@ class DiscussionsModelTopics extends ListModel
 
 			foreach ($items as &$item)
 			{
-				$item->link       = Route::_(DiscussionsHelperRoute::getTopicRoute($item->id));
-				$item->postsCount = DiscussionsHelperTopic::getPostsTotal($item->id);
-
-				$item->editLink = false;
+				$item->link           = Route::_(DiscussionsHelperRoute::getTopicRoute($item->id));
+				$item->last_post_link = (!empty($item->last_post_id)) ?
+					Route::_(DiscussionsHelperRoute::getTopicRoute($item->id) . '&post_id=' . $item->last_post_id) :
+					$item->link;
+				$item->editLink       = false;
 				if (!$user->guest && empty($item->context))
 				{
 					$userId = $user->id;
@@ -565,6 +566,9 @@ class DiscussionsModelTopics extends ListModel
 						}
 					}
 				}
+
+				$item->postsCount = DiscussionsHelperTopic::getPostsTotal($item->id);
+
 				// Convert the images field to an array.
 				$registry     = new Registry($item->images);
 				$item->images = $registry->toArray();
@@ -627,6 +631,23 @@ class DiscussionsModelTopics extends ListModel
 				if (isset($this->_authors[$pk]))
 				{
 					$authors[$pk] = $this->_authors[$pk];
+				}
+				elseif ($pk == 0)
+				{
+					$author           = new stdClass();
+					$author->id       = 0;
+					$author->name     = Text::_('COM_PROFILES_GUEST');
+					$author->avatar   = Uri::root(true) . '/media/com_profiles/images/no-avatar.jpg';
+					$author->status   = '';
+					$author->online   = 0;
+					$author->job      = false;
+					$author->job_id   = '';
+					$author->job_name = '';
+					$author->job_logo = false;
+					$author->position = '';
+					$author->link     = '#none';
+					$author->job_link = '';
+					$authors[$pk]     = $author;
 				}
 				else
 				{

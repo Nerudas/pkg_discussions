@@ -413,6 +413,15 @@ class DiscussionsModelTopic extends ListModel
 			$active = $this->getState('post.id', Factory::getApplication()->input->get('post_id'));
 			foreach ($items as &$item)
 			{
+				// Prepare author data
+				$item->author_name     = (!empty($item->author_name)) ? $item->author_name : Text::_('COM_PROFILES_GUEST');
+				$author_avatar         = (!empty($item->author_avatar) && JFile::exists(JPATH_ROOT . '/' . $item->author_avatar)) ?
+					$item->author_avatar : 'media/com_profiles/images/no-avatar.jpg';
+				$item->author_avatar   = Uri::root(true) . '/' . $author_avatar;
+				$item->author_link     = (!empty($item->author_id)) ? Route::_(ProfilesHelperRoute::getProfileRoute($item->author_id)) : '#none';
+				$item->author_job_logo = (!empty($item->author_job_logo) && JFile::exists(JPATH_ROOT . '/' . $item->author_job_logo)) ?
+					Uri::root(true) . '/' . $item->author_job_logo : false;
+				$item->author_job_link = Route::_(CompaniesHelperRoute::getCompanyRoute($item->author_job_id));
 
 				$item->editLink = false;
 				if (!$user->guest && empty($item->context))
