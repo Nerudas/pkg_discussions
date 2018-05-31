@@ -123,11 +123,13 @@ class DiscussionsModelPost extends AdminModel
 	{
 		$pk    = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
 		$table = $this->getTable();
+		$isNew = true;
 
 		// Load the row if saving an existing type.
 		if ($pk > 0)
 		{
 			$table->load($pk);
+			$isNew = false;
 		}
 
 		if (empty($data['created']))
@@ -135,7 +137,7 @@ class DiscussionsModelPost extends AdminModel
 			$data['created'] = Factory::getDate()->toSql();
 		}
 
-		if (!isset($data['created_by']))
+		if (!isset($data['created_by']) || ($isNew && empty($data['created_by'])))
 		{
 			$data['created_by'] = Factory::getUser()->id;
 		}
