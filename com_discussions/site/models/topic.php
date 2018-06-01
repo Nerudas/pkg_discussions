@@ -707,6 +707,7 @@ class DiscussionsModelTopic extends ListModel
 				{
 					$form->setValue('id', '', 0);
 					$form->setValue('topic_id', '', $pk);
+					$form->setValue('created_by', '', Factory::getUser()->id);
 
 					$result['form'] = $form;
 				}

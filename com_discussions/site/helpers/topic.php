@@ -12,10 +12,12 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Form\Form;
+use Joomla\CMS\Component\ComponentHelper;
 
 class DiscussionsHelperTopic
 {
-
 	/**
 	 * Posts count
 	 *
@@ -24,6 +26,15 @@ class DiscussionsHelperTopic
 	 * @since  1.0.0
 	 */
 	protected static $_postCount = array();
+
+	/**
+	 * Integration
+	 *
+	 * @var    object
+	 *
+	 * @since  1.0.0
+	 */
+	protected static $_integration = array();
 
 	/**
 	 * Method to get topic posts count
@@ -63,11 +74,14 @@ class DiscussionsHelperTopic
 	 */
 	protected static function getTopicModel()
 	{
+		$app    = Factory::getApplication();
+		$user   = Factory::getUser();
+		$params = ComponentHelper::getParams('com_discussions');
+
 		BaseDatabaseModel::addIncludePath(JPATH_SITE . '/components/com_discussions/models', 'DiscussionsModel');
-
 		$model = BaseDatabaseModel::getInstance('Topic', 'DiscussionsModel', array('ignore_request' => true));
-		$user  = Factory::getUser();
 
+		$model->setState('params', $params);
 		// Published state
 		$asset = 'com_discussions';
 		if ((!$user->authorise('core.edit.state', $asset)) && (!$user->authorise('core.edit', $asset)))
@@ -80,6 +94,80 @@ class DiscussionsHelperTopic
 			$model->setState('filter.published', array(0, 1));
 		}
 
+		$model->setState('list.limit', $params->get('posts_limit', 10));
+		$model->setState('list.start', $app->input->get('limitstart', 0, 'uint'));
+
 		return $model;
+	}
+
+	/**
+	 * Method to get integration object for third path components
+	 *
+	 * @param array $data Integration data
+	 *
+	 * @return bool| object
+	 *
+	 * @since 1.0.0
+	 */
+	public static function getIntegration($data = array())
+	{
+		// Load Language
+		$language = Factory::getLanguage();
+		$language->load('com_discussions', JPATH_SITE, $language->getTag());
+
+		// Load routers
+		JLoader::register('DiscussionsHelperRoute', JPATH_SITE . '/components/com_discussions/helpers/route.php');
+		JLoader::register('ProfilesHelperRoute', JPATH_SITE . '/components/com_profiles/helpers/route.php');
+		JLoader::register('CompaniesHelperRoute', JPATH_SITE . '/components/com_companies/helpers/route.php');
+
+		if (empty($data['context']) || empty($data['item_id']))
+		{
+			return false;
+		}
+
+		$key = $data['context'] . '_' . $data['item_id'];
+		if (!isset(self::$_integration[$key]))
+		{
+			$topic_id = (!empty($data['topic_id'])) ? $data['topic_id'] : $key;
+
+			$model = self::getTopicModel();
+			$model->setState('topic.id', $topic_id);
+
+			$items      = $model->getItems();
+			$total      = $model->getTotal();
+			$pagination = $model->getPagination();
+
+			// Get the form.
+			Form::addFormPath(JPATH_SITE . '/components/com_discussions/models/forms');
+			Form::addFieldPath(JPATH_SITE . '/components/com_discussions/models/fields');
+			Form::addFormPath(JPATH_SITE . '/components/com_discussions/model/form');
+			Form::addFieldPath(JPATH_SITE . '/components/com_discussions/model/field');
+
+			$addForm = $model->getAddPostForm($topic_id);
+
+			$layoutData               = array();
+			$layoutData['topic_id']   = $topic_id;
+			$layoutData['items']      = $items;
+			$layoutData['total']      = $total;
+			$layoutData['pagination'] = $pagination;
+			$layoutData['addForm']    = $addForm;
+
+			$render = LayoutHelper::render('components.com_discussions.posts.list', $layoutData);
+
+			$integration             = new stdClass();
+			$integration->topic_id   = $topic_id;
+			$integration->items      = $items;
+			$integration->total      = $total;
+			$integration->pagination = $pagination;
+			$integration->addForm    = $addForm;
+			$integration->layoutData = $layoutData;
+			$integration->render     = $render;
+
+
+			self::$_integration[$key] = $integration;
+
+		}
+
+		return self::$_integration[$key];
 	}
 }

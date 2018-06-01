@@ -47,6 +47,8 @@ class DiscussionsModelPost extends AdminModel
 	 */
 	public function getTable($type = 'Posts', $prefix = 'DiscussionsTable', $config = array())
 	{
+		Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_discussions/tables');
+
 		return Table::getInstance($type, $prefix, $config);
 	}
 

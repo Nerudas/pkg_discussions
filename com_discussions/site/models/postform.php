@@ -60,12 +60,16 @@ class DiscussionsModelPostForm extends DiscussionsModelPost
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
-		$id   = $this->getState('post.id', Factory::getApplication()->input->get('id', 0));
+		$id = $this->getState('post.id', Factory::getApplication()->input->get('id', 0));
+
 		$form = $this->loadForm('com_topic.post.' . $id, 'post', array('control' => 'jform_post_' . $id, 'load_data' => $loadData));
 
-		if (!Factory::getUser()->guest)
+		if ($form)
 		{
-			$form->removeField('captcha');
+			if (!Factory::getUser()->guest)
+			{
+				$form->removeField('captcha');
+			}
 		}
 
 		return $form;
