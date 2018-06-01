@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
 
 JLoader::register('DiscussionsModelPost', JPATH_ADMINISTRATOR . '/components/com_discussions/models/post.php');
 
@@ -62,8 +63,12 @@ class DiscussionsModelPostForm extends DiscussionsModelPost
 	{
 		$id = $this->getState('post.id', Factory::getApplication()->input->get('id', 0));
 
-		$form = $this->loadForm('com_topic.post.' . $id, 'post', array('control' => 'jform_post_' . $id, 'load_data' => $loadData));
+		Form::addFormPath(JPATH_SITE . '/components/com_discussions/models/forms');
+		Form::addFieldPath(JPATH_SITE . '/components/com_discussions/models/fields');
+		Form::addFormPath(JPATH_SITE . '/components/com_discussions/model/form');
+		Form::addFieldPath(JPATH_SITE . '/components/com_discussions/model/field');
 
+		$form = $this->loadForm('com_topic.post.' . $id, 'post', array('control' => 'jform_post_' . $id, 'load_data' => $loadData));
 		if ($form)
 		{
 			if (!Factory::getUser()->guest)

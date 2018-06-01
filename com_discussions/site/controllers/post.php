@@ -15,6 +15,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Session\Session;
 
 class DiscussionsControllerPost extends FormController
 {
@@ -47,21 +48,107 @@ class DiscussionsControllerPost extends FormController
 	 */
 	public function save($key = null, $urlVar = null)
 	{
-		$app = Factory::getApplication();
+		// Check for request forgeries.
+		Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
 
-		// Save post
-		$pk   = $app->input->getInt('id', $app->input->getInt('topic_id', 0) . '_0');
+		$app     = Factory::getApplication();
+		$post_id = $app->input->getInt('id', 0);
+
+		$pk = $post_id;
+		if (empty($pk))
+		{
+			$pk = $app->input->getInt('topic_id', 0);
+		}
+		if (empty($pk))
+		{
+			$pk = $app->input->get('topic_context');
+		}
+		if (empty($post_id))
+		{
+			$pk .= '_0';
+		}
+
 		$data = $this->input->post->get('jform_post_' . $pk, array(), 'array');
 
-		$app->input->post->set('jform', $data);
-		if (!parent::save($key, $urlVar))
+		$needCreateTopic = (empty($data['topic_id']) || !is_numeric($data['topic_id']));
+		if (empty($data['topic_id']) || !is_numeric($data['topic_id']))
 		{
-			$app->setUserState('com_discussions.edit.post.data.' . $pk, $data);
+			$data['topic_id'] = 0;
+			$postModel        = $this->getModel();
+			$postForm         = $postModel->getForm($data, false);
+
+			// Check post
+			if ($this->allowSave($data, $key) && $postModel->validate($postForm, $data))
+			{
+				$error             = false;
+				$topicData         = (!empty($data['create_topic'])) ? $data['create_topic'] : array();
+				$topicData['tags'] = (!empty($topicData['tags'])) ? explode(',', $topicData['tags']) : array();
+
+				$topicModel = $this->getModel('TopicForm');
+
+				//  Get Form
+				if (!$error)
+				{
+					$topicForm = $topicModel->getForm($topicData, false);
+					if (!$topicForm)
+					{
+						$error = true;
+					}
+				}
+
+				// Validation data
+				if (!$error)
+				{
+					$validData = $topicModel->validate($topicForm, $topicData);
+					if (!$validData)
+					{
+						$error = true;
+					}
+				}
+
+				// Save topic
+				if (!$error)
+				{
+					$topic_id = $topicModel->save($validData);
+					if ($topic_id)
+					{
+						$app->input->set('id', $data['id']);
+						$data['topic_id'] = $topic_id;
+						$needCreateTopic  = false;
+					}
+					else
+					{
+						$error = true;
+					}
+				}
+
+				if ($error)
+				{
+					$app->setUserState('com_discussions.edit.post.data.' . $pk, $data);
+					$this->setMessage(Text::_('COM_DISCUSSIONS_ERROR_CANT_CREATE_TOPIC'), 'error');
+					$needCreateTopic = true;
+				}
+			}
+			else
+			{
+				$needCreateTopic = false;
+			}
 		}
-		else
+
+		// Save post data
+		if (!$needCreateTopic)
 		{
-			$app->setUserState('com_discussions.edit.post.data.' . $pk, array());
-			$this->setMessage(Text::_($this->text_prefix . (($data['id'] == 0) ? '_SUBMIT' : '') . '_SAVE_SUCCESS'));
+
+			$app->input->post->set('jform', $data);
+			if (!parent::save($key, $urlVar))
+			{
+				$app->setUserState('com_discussions.edit.post.data.' . $pk, $data);
+			}
+			else
+			{
+				$app->setUserState('com_discussions.edit.post.data.' . $pk, array());
+				$this->setMessage(Text::_($this->text_prefix . (($data['id'] == 0) ? '_SUBMIT' : '') . '_SAVE_SUCCESS'));
+			}
 		}
 
 		// Get return

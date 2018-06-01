@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset name="hidden">
+		<fields name="create_topic">
+			<field name="context" type="hidden" readonly="true"/>
+			<field name="title" type="hidden" readonly="true"/>
+			<field name="text" type="hidden" readonly="true"/>
+			<field name="item_id" type="hidden" readonly="true"/>
+			<field name="state" type="hidden" readonly="true"/>
+			<field name="access" type="hidden" readonly="true"/>
+			<field name="created_by" type="hidden" readonly="true"/>
+			<field name="region" type="hidden" readonly="true"/>
+			<field name="tags" type="hidden" readonly="true"/>
+		</fields>
+	</fieldset>
+</form>

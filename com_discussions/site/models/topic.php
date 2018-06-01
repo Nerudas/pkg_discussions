@@ -272,7 +272,7 @@ class DiscussionsModelTopic extends ListModel
 				// Links
 				$data->link     = Route::_(DiscussionsHelperRoute::getTopicRoute($data->id));
 				$data->editLink = false;
-				if (!$user->guest)
+				if (!$user->guest && empty($data->context) && empty($data->item_id))
 				{
 					$userId   = $user->id;
 					$asset    = 'com_discussions.topic.' . $data->id;
@@ -468,6 +468,7 @@ class DiscussionsModelTopic extends ListModel
 						}
 					}
 				}
+
 				$item->form = false;
 				if ($item->editLink)
 				{
@@ -698,7 +699,14 @@ class DiscussionsModelTopic extends ListModel
 
 			if ($user->authorise('core.create', 'com_discussions.post') || $user->authorise('post.create', 'com_discussions.post'))
 			{
-				$result['action'] = Route::_(DiscussionsHelperRoute::getPostFormRoute(0, $pk));
+				$topic_route = (is_numeric($pk)) ? $pk : 0;
+				$action      = DiscussionsHelperRoute::getPostFormRoute(0, $topic_route);
+				if (empty($topic_route))
+				{
+					$action .= '&topic_context=' . $pk;
+				}
+
+				$result['action'] = Route::_($action);
 
 				$formModel = $this->getPostFormModel();
 				$formModel->setState('post.id', $pk . '_0');

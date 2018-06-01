@@ -13,7 +13,6 @@ defined('_JEXEC') or die;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Layout\LayoutHelper;
-use Joomla\CMS\Form\Form;
 use Joomla\CMS\Component\ComponentHelper;
 
 class DiscussionsHelperTopic
@@ -65,6 +64,81 @@ class DiscussionsHelperTopic
 		return self::$_postCount[$pk];
 	}
 
+
+	/**
+	 * Method to get integration object for third path components
+	 *
+	 * @param array $data Integration data
+	 *
+	 * @return bool| object
+	 *
+	 * @since 1.0.0
+	 */
+	public static function getIntegration($data = array())
+	{
+		// Load Language
+		$language = Factory::getLanguage();
+		$language->load('com_discussions', JPATH_SITE, $language->getTag());
+
+		// Load routers
+		JLoader::register('DiscussionsHelperRoute', JPATH_SITE . '/components/com_discussions/helpers/route.php');
+		JLoader::register('ProfilesHelperRoute', JPATH_SITE . '/components/com_profiles/helpers/route.php');
+		JLoader::register('CompaniesHelperRoute', JPATH_SITE . '/components/com_companies/helpers/route.php');
+
+		if (empty($data['context']) || empty($data['item_id']))
+		{
+			return false;
+		}
+
+		$key = $data['context'] . '_' . $data['item_id'];
+		if (!isset(self::$_integration[$key]))
+		{
+			$topic_id = (!empty($data['topic_id'])) ? $data['topic_id'] : str_replace('.', '_', $key);
+
+			$model = self::getTopicModel();
+			$model->setState('topic.id', $topic_id);
+
+			$items      = $model->getItems();
+			$total      = $model->getTotal();
+			$pagination = $model->getPagination();
+
+			// Get the form.
+			$addForm = $model->getAddPostForm($topic_id);
+			if (empty($data['topic_id']) && !empty($data['create_topic']) && $addForm)
+			{
+				$addForm['form']->loadFile('create_topic');
+				foreach ($data['create_topic'] as $name => $value)
+				{
+					$addForm['form']->setValue($name, 'create_topic', $value);
+				}
+			}
+
+			$layoutData               = array();
+			$layoutData['topic_id']   = $topic_id;
+			$layoutData['items']      = $items;
+			$layoutData['total']      = $total;
+			$layoutData['pagination'] = $pagination;
+			$layoutData['addForm']    = $addForm;
+
+			$render = LayoutHelper::render('components.com_discussions.posts.list', $layoutData);
+
+			$integration             = new stdClass();
+			$integration->topic_id   = $topic_id;
+			$integration->items      = $items;
+			$integration->total      = $total;
+			$integration->pagination = $pagination;
+			$integration->addForm    = $addForm;
+			$integration->layoutData = $layoutData;
+			$integration->render     = $render;
+
+
+			self::$_integration[$key] = $integration;
+
+		}
+
+		return self::$_integration[$key];
+	}
+
 	/**
 	 * Method to get Topic Model
 	 *
@@ -98,76 +172,5 @@ class DiscussionsHelperTopic
 		$model->setState('list.start', $app->input->get('limitstart', 0, 'uint'));
 
 		return $model;
-	}
-
-	/**
-	 * Method to get integration object for third path components
-	 *
-	 * @param array $data Integration data
-	 *
-	 * @return bool| object
-	 *
-	 * @since 1.0.0
-	 */
-	public static function getIntegration($data = array())
-	{
-		// Load Language
-		$language = Factory::getLanguage();
-		$language->load('com_discussions', JPATH_SITE, $language->getTag());
-
-		// Load routers
-		JLoader::register('DiscussionsHelperRoute', JPATH_SITE . '/components/com_discussions/helpers/route.php');
-		JLoader::register('ProfilesHelperRoute', JPATH_SITE . '/components/com_profiles/helpers/route.php');
-		JLoader::register('CompaniesHelperRoute', JPATH_SITE . '/components/com_companies/helpers/route.php');
-
-		if (empty($data['context']) || empty($data['item_id']))
-		{
-			return false;
-		}
-
-		$key = $data['context'] . '_' . $data['item_id'];
-		if (!isset(self::$_integration[$key]))
-		{
-			$topic_id = (!empty($data['topic_id'])) ? $data['topic_id'] : $key;
-
-			$model = self::getTopicModel();
-			$model->setState('topic.id', $topic_id);
-
-			$items      = $model->getItems();
-			$total      = $model->getTotal();
-			$pagination = $model->getPagination();
-
-			// Get the form.
-			Form::addFormPath(JPATH_SITE . '/components/com_discussions/models/forms');
-			Form::addFieldPath(JPATH_SITE . '/components/com_discussions/models/fields');
-			Form::addFormPath(JPATH_SITE . '/components/com_discussions/model/form');
-			Form::addFieldPath(JPATH_SITE . '/components/com_discussions/model/field');
-
-			$addForm = $model->getAddPostForm($topic_id);
-
-			$layoutData               = array();
-			$layoutData['topic_id']   = $topic_id;
-			$layoutData['items']      = $items;
-			$layoutData['total']      = $total;
-			$layoutData['pagination'] = $pagination;
-			$layoutData['addForm']    = $addForm;
-
-			$render = LayoutHelper::render('components.com_discussions.posts.list', $layoutData);
-
-			$integration             = new stdClass();
-			$integration->topic_id   = $topic_id;
-			$integration->items      = $items;
-			$integration->total      = $total;
-			$integration->pagination = $pagination;
-			$integration->addForm    = $addForm;
-			$integration->layoutData = $layoutData;
-			$integration->render     = $render;
-
-
-			self::$_integration[$key] = $integration;
-
-		}
-
-		return self::$_integration[$key];
 	}
 }
