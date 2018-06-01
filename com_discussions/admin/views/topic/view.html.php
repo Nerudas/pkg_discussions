@@ -14,6 +14,7 @@ use Joomla\CMS\MVC\View\HtmlView;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Application\SiteApplication;
+use Joomla\CMS\Access\Exception\NotAllowed;
 
 class DiscussionsViewTopic extends HtmlView
 {
