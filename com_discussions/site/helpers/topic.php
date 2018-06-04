@@ -14,6 +14,7 @@ use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
 
 class DiscussionsHelperTopic
 {
@@ -137,6 +138,70 @@ class DiscussionsHelperTopic
 		}
 
 		return self::$_integration[$key];
+	}
+
+	/**
+	 * Method to update topic data
+	 *
+	 * @param array $data Save data
+	 *
+	 * @return bool
+	 *
+	 * @since 1.0.0
+	 */
+	public static function updateTopic($data)
+	{
+		if (!empty($data['context']) && !empty($data['item_id']))
+		{
+			$app = Factory::getApplication();
+
+			// Load Language
+			$language = Factory::getLanguage();
+			$language->load('com_discussions', JPATH_SITE, $language->getTag());
+
+			// Get topic id
+			$db    = Factory::getDbo();
+			$query = $db->getQuery(true)
+				->select('id')
+				->from('#__discussions_topics')
+				->where('context = ' . $db->quote($data['context']))
+				->where('item_id = ' . $data['item_id']);
+			$db->setQuery($query);
+			$data['id'] = $db->loadResult();
+
+			if (!empty($data['id']))
+			{
+				BaseDatabaseModel::addIncludePath(JPATH_SITE . '/components/com_discussions/models', 'DiscussionsModel');
+				$model = BaseDatabaseModel::getInstance('TopicForm', 'DiscussionsModel', array('ignore_request' => true));
+
+				$form = $model->getForm($data, false);
+				if (!$form)
+				{
+					$app->enqueueMessage(Text::_('COM_DISCUSSIONS_ERROR_CANT_SAVE_TOPIC'), 'warning');
+
+					return false;
+				}
+
+				$validData = $model->validate($form, $data);
+				if (!$validData)
+				{
+					$app->enqueueMessage(Text::_('COM_DISCUSSIONS_ERROR_CANT_SAVE_TOPIC'), 'warning');
+
+					return false;
+				}
+
+				if (!$model->save($validData))
+				{
+					$app->enqueueMessage(Text::_('COM_DISCUSSIONS_ERROR_CANT_SAVE_TOPIC'), 'warning');
+
+					return false;
+				}
+			}
+		}
+
+		$app->enqueueMessage(Text::_('COM_DISCUSSIONS_TOPIC_SAVE_SUCCESS'), 'message');
+
+		return true;
 	}
 
 	/**

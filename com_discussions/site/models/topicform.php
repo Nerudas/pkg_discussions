@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
 
 JLoader::register('DiscussionsModelTopic', JPATH_ADMINISTRATOR . '/components/com_discussions/models/topic.php');
 
@@ -65,6 +66,11 @@ class DiscussionsModelTopicForm extends DiscussionsModelTopic
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
+		Form::addFormPath(JPATH_SITE . '/components/com_discussions/models/forms');
+		Form::addFieldPath(JPATH_SITE . '/components/com_discussions/models/fields');
+		Form::addFormPath(JPATH_SITE . '/components/com_discussions/model/form');
+		Form::addFieldPath(JPATH_SITE . '/components/com_discussions/model/field');
+
 		$form = parent::getForm($data, $loadData);
 		$form->setValue('category', '', $this->getState('category.default', 1));
 
