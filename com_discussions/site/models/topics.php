@@ -583,6 +583,9 @@ class DiscussionsModelTopics extends ListModel
 				// Get Tags
 				$item->tags = new TagsHelper;
 				$item->tags->getItemTags('com_discussions.topic', $item->id);
+
+				// Change shortcodes layout
+				$item->text = str_replace('layout="discussions"', 'layout="discussions_preview"', $item->text);
 			}
 		}
 
