@@ -16,6 +16,7 @@
 	</languages>
 	<files>
 		<folder type="component" id="com_discussions">com_discussions</folder>
+		<folder type="module" id="mod_discussions_categories" client="site">mod_discussions_categories</folder>
 	</files>
 	<updateservers>
 		<server type="extension" priority="1" name="Discussions Package">

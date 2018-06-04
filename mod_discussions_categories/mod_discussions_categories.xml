@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.8" type="module" client="site" method="upgrade">
+	<name>MOD_DISCUSSIONS_CATEGORIES</name>
+	<author>Nerudas</author>
+	<creationDate>June 2018</creationDate>
+	<copyright>Copyright (c) 2015 - 2018 Nerudas. All rights reserved.</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>support@nerudas.ru</authorEmail>
+	<authorUrl>nerudas.ru</authorUrl>
+	<version>1.0.0</version>
+	<description>MOD_DISCUSSIONS_CATEGORIES_DESCRIPTION</description>
+	<languages folder="language">
+		<language tag="en-GB">en-GB/en-GB.mod_discussions_categories.ini</language>
+		<language tag="en-GB">en-GB/en-GB.mod_discussions_categories.sys.ini</language>
+		<language tag="ru-RU">ru-RU/ru-RU.mod_discussions_categories.ini</language>
+		<language tag="ru-RU">ru-RU/ru-RU.mod_discussions_categories.sys.ini</language>
+	</languages>
+	<files>
+		<filename module="mod_discussions_categories">mod_discussions_categories.php</filename>
+		<filename>helper.php</filename>
+		<folder>tmpl</folder>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="show_all" type="radio"
+					   label="MOD_DISCUSSIONS_CATEGORIES_PARAMS_SHOWALL"
+					   default="0"
+					   class="btn-group btn-group-yesno">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
+			</fieldset>
+			<fieldset name="advanced">
+				<field name="layout" type="modulelayout"
+					   label="JFIELD_ALT_LAYOUT_LABEL"
+					   description="JFIELD_ALT_MODULE_LAYOUT_DESC"/>
+				<field name="moduleclass_sfx" type="textarea"
+					   label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+					   description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"
+					   rows="3"/>
+				<field name="cache" type="list"
+					   label="COM_MODULES_FIELD_CACHING_LABEL"
+					   description="COM_MODULES_FIELD_CACHING_DESC"
+					   default="1">
+					<option value="1">JGLOBAL_USE_GLOBAL</option>
+					<option value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+				</field>
+				<field name="cache_time" type="text"
+					   label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+					   description="COM_MODULES_FIELD_CACHE_TIME_DESC"
+					   default="900"/>
+				<field name="cachemode" type="hidden"
+					   default="static">
+					<option value="static">Static</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

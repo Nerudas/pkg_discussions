@@ -13,3 +13,6 @@ Thank you for your understanding.
 ## Package Contents
 * **Discussions Component**  
 Component for creating Discussions section on the site
+
+* **Discussions - Categories Module**  
+Module for displaying discussions categories
