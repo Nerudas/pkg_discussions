@@ -19,3 +19,6 @@ Module for displaying discussions categories
 
 * **Discussions - Administrator Module**  
 Module for displaying information about discussions in the admin panel
+
+* **Discussions - Latest Topics Module**  
+Module for displaying the latest discussions topics
