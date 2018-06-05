@@ -15,6 +15,12 @@ use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 
+$app = Factory::getApplication();
+
+if ($app->isSite() && $app->input->get('option') == 'com_discussions' && $app->input->get('view') == 'topicform')
+{
+	return false;
+}
 // Include route helper
 JLoader::register('DiscussionsHelperRoute', JPATH_SITE . '/components/com_discussions/helpers/route.php');
 JLoader::register('ProfilesHelperRoute', JPATH_SITE . '/components/com_profiles/helpers/route.php');

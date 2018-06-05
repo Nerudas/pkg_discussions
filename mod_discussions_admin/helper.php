@@ -44,6 +44,7 @@ class ModDiscussionsAdminHelper
 			$list['limit'] = $params->get('limit', 5);
 			$list['limit'] = $params->get('limit', 5);
 			$app->setUserState('com_discussions.' . $tab . '.list', $list);
+			$app->setUserState('com_discussions.' . $tab . '.filter', '');
 
 			$items = $model->getItems();
 			$app->setUserState('com_discussions.' . $tab . '.list', '');
