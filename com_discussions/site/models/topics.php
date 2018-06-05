@@ -586,7 +586,8 @@ class DiscussionsModelTopics extends ListModel
 				$item->tags->getItemTags('com_discussions.topic', $item->id);
 
 				// Change shortcodes layout
-				$item->text = str_replace('layout="discussions"', 'layout="discussions_preview"', $item->text);
+				$item->text           = str_replace('layout="discussions"', 'layout="discussions_preview"', $item->text);
+				$item->last_post_text = str_replace('layout="discussions"', 'layout="discussions_preview"', $item->last_post_text);
 			}
 		}
 
