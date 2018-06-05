@@ -170,6 +170,13 @@ class DiscussionsModelPosts extends ListModel
 			$query->where('(p.state = 0 OR p.state = 1)');
 		}
 
+		// Filter by created_by
+		$created_by = $this->getState('filter.created_by');
+		if (!empty($created_by))
+		{
+			$query->where('p.created_by = ' . (int) $created_by);
+		}
+
 
 		// Filter by search.
 		$search = $this->getState('filter.search');
