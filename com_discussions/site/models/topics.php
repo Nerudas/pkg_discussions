@@ -428,6 +428,7 @@ class DiscussionsModelTopics extends ListModel
 			'last_post.id as last_post_id',
 			'(CASE WHEN last_post.id IS NOT NULL THEN last_post.created ELSE t.created END) as last_post_created',
 			'(CASE WHEN last_post.id IS NOT NULL THEN last_post.created_by ELSE t.created_by END) as last_post_created_by',
+			'(CASE WHEN last_post.id IS NOT NULL THEN last_post.text ELSE t.text END) as last_post_text',
 		))
 			->join('LEFT', '#__discussions_posts AS last_post ON last_post.id = (' . (string) $lastPostQuery . ')');
 
