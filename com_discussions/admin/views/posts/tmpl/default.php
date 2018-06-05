@@ -45,7 +45,7 @@ $columns = 7;
 				<?php echo Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
 			</div>
 		<?php else : ?>
-			<table id="itemList" class="table table-striped">
+			<table id="postList" class="table table-striped">
 				<thead>
 				<tr>
 					<th width="1%" class="center">
@@ -113,7 +113,7 @@ $columns = 7;
 								<?php if ($canEdit) : ?>
 									<a class="hasTooltip" title="<?php echo Text::_('JACTION_EDIT'); ?>"
 									   href="<?php echo Route::_('index.php?option=com_discussions&task=post.edit&id=' . $item->id); ?>">
-										<?php echo JHtmlString::truncate($this->escape($item->title), 100, false, false); ?>
+										<?php echo $item->title; ?>
 									</a>
 								<?php else : ?>
 									<?php echo $this->escape($item->title); ?>

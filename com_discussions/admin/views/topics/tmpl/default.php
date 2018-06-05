@@ -45,7 +45,7 @@ $columns = 9;
 				<?php echo Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
 			</div>
 		<?php else : ?>
-			<table id="itemList" class="table table-striped">
+			<table id="topicList" class="table table-striped">
 				<thead>
 				<tr>
 					<th width="1%" class="center">
