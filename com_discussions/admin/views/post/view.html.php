@@ -128,7 +128,7 @@ class DiscussionsViewPost extends HtmlView
 			JLoader::register('DiscussionsHelperRoute', JPATH_SITE . '/components/com_discussions/helpers/route.php');
 			$siteRouter = SiteApplication::getRouter();
 
-			$link = $siteRouter->build(DiscussionsHelperRoute::getTopicRoute($this->item->id))->toString();
+			$link = $siteRouter->build(DiscussionsHelperRoute::getTopicRoute($this->item->topic_id))->toString();
 			$link = str_replace('administrator/', '', $link);
 
 			$toolbar = JToolBar::getInstance('toolbar');
