@@ -179,8 +179,8 @@ class com_DiscussionsInstallerScript
 		$topic->table->special                               = new stdClass();
 		$topic->table->special->dbtable                      = '#__discussions_topics';
 		$topic->table->special->key                          = 'id';
-		$topic->table->special->type                         = 'Item';
-		$topic->table->special->prefix                       = 'TopicTable';
+		$topic->table->special->type                         = 'Items';
+		$topic->table->special->prefix                       = 'DiscussionsTable';
 		$topic->table->special->config                       = 'array()';
 		$topic->table->common                                = new stdClass();
 		$topic->table->common->dbtable                       = '#__ucm_content';
