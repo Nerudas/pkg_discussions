@@ -27,10 +27,10 @@ $children   = ($categories) ? $categories->children : array();
 $root       = ($categories) ? $categories->root : array();
 $categories = ($categories) ? $categories->all : false;
 
-$app     = Factory::getApplication();
+$app       = Factory::getApplication();
 $checkView = ($app->input->get('option') == 'com_discussions' && $app->input->get('view') == 'topics');
 $all       = ($params->get('show_all') && (!$checkView || $app->input->getInt('id') != 1)) ?
 	Text::_('MOD_DISCUSSIONS_CATEGORIES_ALL') : false;
-$allLink = Route::_(DiscussionsHelperRoute::getTopicsRoute(1));
+$allLink   = Route::_(DiscussionsHelperRoute::getTopicsRoute(1));
 
 require ModuleHelper::getLayoutPath($module->module, $params->get('layout', 'default'));

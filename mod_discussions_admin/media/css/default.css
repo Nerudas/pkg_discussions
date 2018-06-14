@@ -10,6 +10,7 @@
 [data-mod-discussions-admin] .tab-pane {
 	min-height: 350px;
 }
+
 [data-mod-discussions-admin] .result {
 	display: none;
 }

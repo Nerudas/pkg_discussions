@@ -51,11 +51,11 @@ $canDo   = DiscussionsHelper::getActions('com_discussions');
 	</tr>
 	</tfoot>
 	<tbody>
-	<?php foreach ($items as $i => $item) :	?>
+	<?php foreach ($items as $i => $item): ?>
 		<tr item-id="<?php echo $item->id ?>">
 			<td>
 				<div>
-					<?php if ($canDo->get('core.edit')) : ?>
+					<?php if ($canDo->get('core.edit')): ?>
 						<a class="hasTooltip" title="<?php echo Text::_('JACTION_EDIT'); ?>"
 						   href="<?php echo Route::_('index.php?option=com_discussions&task=topic.edit&id=' . $item->id); ?>">
 							<?php echo $item->title; ?>
@@ -75,7 +75,7 @@ $canDo   = DiscussionsHelper::getActions('com_discussions');
 				</div>
 			</td>
 			<td class="hidden-phone">
-				<?php if ((int) $item->created_by != 0) : ?>
+				<?php if ((int) $item->created_by != 0): ?>
 					<div class="author">
 						<div class="avatar<?php echo ($item->author_online) ? ' online' : '' ?>"
 							 style="background-image: url('<?php echo $item->author_avatar; ?>')">
