@@ -68,7 +68,7 @@ class DiscussionsModelPostForm extends DiscussionsModelPost
 		Form::addFormPath(JPATH_SITE . '/components/com_discussions/model/form');
 		Form::addFieldPath(JPATH_SITE . '/components/com_discussions/model/field');
 
-		$form = $this->loadForm('com_topic.post.' . $id, 'post', array('control' => 'jform_post_' . $id, 'load_data' => $loadData));
+		$form = $this->loadForm('com_discussions.post.' . $id, 'post', array('control' => 'jform_post_' . $id, 'load_data' => $loadData));
 		if ($form)
 		{
 			if (!Factory::getUser()->guest)

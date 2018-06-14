@@ -65,7 +65,7 @@ class DiscussionsModelPost extends AdminModel
 	public function getForm($data = array(), $loadData = true)
 	{
 		$app  = Factory::getApplication();
-		$form = $this->loadForm('com_topic.post', 'post', array('control' => 'jform', 'load_data' => $loadData));
+		$form = $this->loadForm('com_discussions.post', 'post', array('control' => 'jform', 'load_data' => $loadData));
 		if (empty($form))
 		{
 			return false;
