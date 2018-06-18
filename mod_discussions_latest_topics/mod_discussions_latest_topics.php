@@ -34,7 +34,7 @@ $language->load('com_discussions', JPATH_SITE, $language->getTag(), false);
 BaseDatabaseModel::addIncludePath(JPATH_ROOT . '/components/com_discussions/models');
 $model = BaseDatabaseModel::getInstance('Topics', 'DiscussionsModel', array('ignore_request' => true));
 $model->setState('list.limit', $params->get('limit', 5));
-$model->setState('filter.category', $params->get('category', 1));
+$model->setState('tag.id', $params->get('tag', 1));
 if ((!Factory::getUser()->authorise('core.edit.state', 'com_discussions.topic')) &&
 	(!Factory::getUser()->authorise('core.edit', 'com_discussions.topic')))
 {
@@ -49,17 +49,17 @@ $model->setState('filter.author_id', $params->get('author_id', ''));
 
 // Variables
 $items        = $model->getItems();
-$categoryLink = DiscussionsHelperRoute::getTopicsRoute($params->get('category', 1));
+$tagLink = DiscussionsHelperRoute::getTopicsRoute($params->get('tag', 1));
 
 if (!empty($params->get('author_id', '')))
 {
-	$categoryLink .= '&filter[author_id]=' . $params->get('author_id');
+	$tagLink .= '&filter[author_id]=' . $params->get('author_id');
 }
 if (!empty($params->get('onlymy', '')))
 {
-	$categoryLink .= '&filter[onlymy]=' . $params->get('onlymy');
+	$tagLink .= '&filter[onlymy]=' . $params->get('onlymy');
 }
-$categoryLink = Route::_($categoryLink);
+$tagLink = Route::_($tagLink);
 
 $addLink = Route::_(DiscussionsHelperRoute::getTopicFormRoute());
 

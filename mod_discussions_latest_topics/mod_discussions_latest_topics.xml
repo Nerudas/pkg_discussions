@@ -22,12 +22,9 @@
 	<config>
 		<fields name="params" addfieldpath="/administrator/components/com_discussions/models/fields">
 			<fieldset name="basic">
-				<field name="category" type="discussionscategory"
-					   label="MOD_DISCUSSIONS_LATEST_TOPICS_PARAMS_CATEGORY"
-					   default="1"
-					   required="true">
-					<option value="1">JGLOBAL_ROOT</option>
-				</field>
+				<field name="tag" type="discussionstags"
+					   label="JTAG"
+					   required="true"/>
 				<field name="limit" type="number" label="MOD_DISCUSSIONS_LATEST_TOPICS_PARAMS_LIMIT" default="5"/>
 			</fieldset>
 			<fieldset name="advanced">

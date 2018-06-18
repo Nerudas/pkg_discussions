@@ -12,5 +12,5 @@ defined('_JEXEC') or die;
 
 
 echo '<pre>', print_r($addLink, true), '</pre>';
-echo '<pre>', print_r($categoryLink, true), '</pre>';
+echo '<pre>', print_r($tagLink, true), '</pre>';
 echo '<pre>', print_r($items, true), '</pre>';

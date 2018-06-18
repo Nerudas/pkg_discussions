@@ -46,15 +46,6 @@ class DiscussionsViewTopicForm extends HtmlView
 	protected $state;
 
 	/**
-	 * The categories array
-	 *
-	 * @var  array
-	 *
-	 * @since  1.0.0
-	 */
-	protected $categories;
-
-	/**
 	 * The actions the user is authorised to perform
 	 *
 	 * @var  JObject
@@ -82,10 +73,7 @@ class DiscussionsViewTopicForm extends HtmlView
 		$this->form       = $this->get('Form');
 		$this->item       = $this->get('Item');
 		$this->state      = $this->get('State');
-		$this->categories = $this->get('Categories');
-
-		$this->link        = DiscussionsHelperRoute::getTopicFormRoute($this->state->get('topic.id'), $this->state->get('category.id'),
-			$this->state->get('category.default'));
+		$this->link        = DiscussionsHelperRoute::getTopicFormRoute($this->state->get('topic.id'), $this->state->get('topic.id'));
 		$this->return_page = $this->get('ReturnPage');
 
 		// Check for errors.
@@ -100,40 +88,33 @@ class DiscussionsViewTopicForm extends HtmlView
 
 		$layout = ($active && !empty($active->query['layout']) &&
 			strpos($active->link, 'view=topicform') &&
-			strpos($active->link, '&catid=' . (string) $this->state->get('category.id')) &&
+			strpos($active->link, '&tag_id=' . (string) $this->state->get('tag.id')) &&
 			strpos($active->link, '&id=' . (string) $this->state->get('topic.id'))
 		) ? $active->query['layout'] : $params->get('topicform_layout', 'default');
 
-		if ($params->get('show_categories', 1) && empty($this->state->get('topic.id'))
-			&& $this->state->get('category.default', 1) <= 1)
-		{
-			$layout .= '_categories';
-		}
-		else
-		{
-			// Check actions
-			$authorised = (empty($this->item->id)) ? $user->authorise('core.create', 'com_discussions') :
-				empty($this->item->context) && (
-					$user->authorise('core.edit', 'com_discussions.topic.' . $this->item->id) ||
-					($user->authorise('core.edit.own', 'com_discussions.topic.' . $this->item->id)
-						&& $this->item->created_by == $user->id));
-
-			if (!$authorised && $user->guest)
-			{
-				$login = Route::_('index.php?option=com_users&view=login&return=' . base64_encode(Uri::getInstance()));
-				$app->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'notice');
-				$app->redirect($login, 403);
-			}
-			elseif (!$authorised)
-			{
-				$app->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'error');
-				$app->setHeader('status', 403, true);
-
-				return false;
-			}
-		}
-
 		$this->setLayout($layout);
+
+		// Check actions
+		$authorised = (empty($this->item->id)) ? $user->authorise('core.create', 'com_discussions') :
+			empty($this->item->context) && (
+				$user->authorise('core.edit', 'com_discussions.topic.' . $this->item->id) ||
+				($user->authorise('core.edit.own', 'com_discussions.topic.' . $this->item->id)
+					&& $this->item->created_by == $user->id));
+
+		if (!$authorised && $user->guest)
+		{
+			$login = Route::_('index.php?option=com_users&view=login&return=' . base64_encode(Uri::getInstance()));
+			$app->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'notice');
+			$app->redirect($login, 403);
+		}
+		elseif (!$authorised)
+		{
+			$app->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'error');
+			$app->setHeader('status', 403, true);
+
+			return false;
+		}
+
 
 		$this->_prepareDocument();
 
@@ -165,22 +146,5 @@ class DiscussionsViewTopicForm extends HtmlView
 
 		$this->document->setTitle($title);
 		$this->document->setMetadata('robots', 'noindex');
-	}
-
-	/**
-	 * Returns the categories array
-	 *
-	 * @return  mixed  array
-	 *
-	 * @since  1.0.0
-	 */
-	public function getCategories()
-	{
-		if (!is_array($this->categories))
-		{
-			$this->categories = $this->get('Categories');
-		}
-
-		return $this->categories;
 	}
 }

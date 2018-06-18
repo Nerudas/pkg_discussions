@@ -17,39 +17,33 @@ class DiscussionsHelperRoute extends RouteHelper
 	/**
 	 * Fetches the topics route
 	 *
-	 * @param   int $catid Category ID
+	 * @param int $tag_id Tag id
 	 *
 	 * @return  string
 	 *
 	 * @since  1.0.0n
 	 */
-	public static function getTopicsRoute($catid = 1)
+	public static function getTopicsRoute($tag_id = 1)
 	{
-		return 'index.php?option=com_discussions&view=topics&id=' . $catid;
+		return 'index.php?option=com_discussions&view=topics&id=' . $tag_id;
 	}
 
 	/**
 	 * Fetches the topic route
 	 *
-	 * @param   int $catid Category ID
-	 * @param   int $id    Item ID
+	 * @param   int $id Item ID
 	 *
 	 * @return  string
 	 *
 	 * @since  1.0.0
 	 */
-	public static function getTopicRoute($id = null, $catid = 1)
+	public static function getTopicRoute($id = null)
 	{
-		$link = 'index.php?option=com_discussions&view=topic';
+		$link = 'index.php?option=com_discussions&view=topic&tag_id=1';
 
 		if (!empty($id))
 		{
 			$link .= '&id=' . $id;
-		}
-
-		if (!empty($catid))
-		{
-			$link .= '&catid=' . $catid;
 		}
 
 		return $link;
@@ -58,24 +52,19 @@ class DiscussionsHelperRoute extends RouteHelper
 	/**
 	 * Fetches the form route
 	 *
-	 * @param  int $id       Item ID
-	 * @param  int $catid    Category ID
-	 * @param  int $category Default Category ID
+	 * @param  int $id     Item ID
+	 * @param int  $tag_id Tag ID
 	 *
 	 * @return  string
 	 *
 	 * @since  1.0.0
 	 */
-	public static function getTopicFormRoute($id = null, $catid = 1, $category = null)
+	public static function getTopicFormRoute($id = null, $tag_id = 1)
 	{
-		$link = 'index.php?option=com_discussions&view=topicform&catid=' . $catid;
+		$link = 'index.php?option=com_discussions&view=topicform&tag_id=' . $tag_id;
 		if (!empty($id))
 		{
 			$link .= '&id=' . $id;
-		}
-		if (!empty($category))
-		{
-			$link .= '&category=' . $category;
 		}
 
 		return $link;

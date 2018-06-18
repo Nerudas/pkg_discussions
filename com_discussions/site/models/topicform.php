@@ -35,15 +35,6 @@ class DiscussionsModelTopicForm extends DiscussionsModelTopic
 		$pk = $app->input->getInt('id', 0);
 		$this->setState('topic.id', $pk);
 
-		$catid = $app->input->getInt('catid', 1);
-		$this->setState('category.id', $catid);
-
-		if (empty($pk))
-		{
-			$default_category = $app->input->getInt('category', 1);
-			$this->setState('category.default', $default_category);
-		}
-
 		$return = $app->input->get('return', null, 'base64');
 		$this->setState('return_page', base64_decode($return));
 
@@ -72,7 +63,6 @@ class DiscussionsModelTopicForm extends DiscussionsModelTopic
 		Form::addFieldPath(JPATH_SITE . '/components/com_discussions/model/field');
 
 		$form = parent::getForm($data, $loadData);
-		$form->setValue('category', '', $this->getState('category.default', 1));
 
 		return $form;
 	}

@@ -23,13 +23,12 @@ use Joomla\CMS\Uri\Uri;
 class DiscussionsModelTopics extends ListModel
 {
 	/**
-	 * Type data
+	 * This tag
 	 *
 	 * @var    object
-	 *
 	 * @since  1.0.0
 	 */
-	protected $_category = array();
+	protected $_tag = null;
 
 	/**
 	 * Authors data
@@ -83,14 +82,6 @@ class DiscussionsModelTopics extends ListModel
 	 * @since  1.0.0
 	 */
 	protected $filterFormName = 'filter_topics';
-
-	/**
-	 * Category tags
-	 *
-	 * @var    array
-	 * @since  1.0.0
-	 */
-	protected $_categoryTags = array();
 
 	/**
 	 * Constructor.
@@ -147,12 +138,7 @@ class DiscussionsModelTopics extends ListModel
 
 		// Set id state
 		$pk = $app->input->getInt('id', 1);
-		$this->setState('category.id', $pk);
-
-		if ($pk > 1)
-		{
-			$this->setState('filter.category', $pk);
-		}
+		$this->setState('tag.id', $pk);
 
 		// Load the parameters. Merge Global and Menu Item params into new object
 		$params     = $app->getParams();
@@ -168,10 +154,6 @@ class DiscussionsModelTopics extends ListModel
 
 		// Published state
 		$asset = 'com_discussions';
-		if ($pk)
-		{
-			$asset .= '.category.' . $pk;
-		}
 		if ((!$user->authorise('core.edit.state', $asset)) && (!$user->authorise('core.edit', $asset)))
 		{
 			// Limit to published for people who can't edit or edit.state.
@@ -220,7 +202,7 @@ class DiscussionsModelTopics extends ListModel
 	 */
 	protected function getStoreId($id = '')
 	{
-		$id .= ':' . $this->getState('category.id');
+		$id .= ':' . $this->getState('tag.id');
 		$id .= ':' . serialize($this->getState('filter.published'));
 		$id .= ':' . $this->getState('filter.search');
 		$id .= ':' . $this->getState('filter.allregions');
@@ -228,169 +210,6 @@ class DiscussionsModelTopics extends ListModel
 		$id .= ':' . $this->getState('filter.author_id');
 
 		return parent::getStoreId($id);
-	}
-
-	/**
-	 * Method to get type data for the current type
-	 *
-	 * @param   integer $pk The id of the type.
-	 *
-	 * @return  mixed object|false
-	 *
-	 * @since  1.0.0
-	 */
-	public function getCategory($pk = null)
-	{
-		$pk = (!empty($pk)) ? $pk : (int) $this->getState('category.id');
-
-		if (!isset($this->_category[$pk]))
-		{
-			try
-			{
-				$db    = $this->getDbo();
-				$query = $db->getQuery(true)
-					->select('c.*')
-					->from('#__discussions_categories AS c')
-					->where('c.id = ' . (int) $pk);
-
-				// Filter by published state.
-				$published = $this->getState('filter.published');
-				if (is_numeric($published))
-				{
-					$query->where('c.state = ' . (int) $published);
-				}
-				elseif (is_array($published))
-				{
-					$query->where('c.state IN (' . implode(',', $published) . ')');
-				}
-
-				$db->setQuery($query);
-				$data = $db->loadObject();
-
-				if (empty($data))
-				{
-					return JError::raiseError(404, Text::_('COM_DISCUSSIONS_ERROR_CATEGORY_NOT_FOUND'));
-				}
-
-				// Root
-				$data->root = ($data->id == 1);
-
-				// Links
-				$data->link    = Route::_(DiscussionsHelperRoute::getTopicsRoute($data->id));
-				$data->addLink = Route::_(DiscussionsHelperRoute::getTopicFormRoute());
-
-				// Convert parameter fields to objects.
-				$registry     = new Registry($data->attribs);
-				$data->params = clone $this->getState('params');
-				$data->params->merge($registry);
-
-				// If no access, the layout takes some responsibility for display of limited information.
-				$data->params->set('access-view', in_array($data->access, Factory::getUser()->getAuthorisedViewLevels()));
-
-				// Convert metadata fields to objects.
-				$data->metadata = new Registry($data->metadata);
-
-				$this->_category[$pk] = $data;
-			}
-			catch (Exception $e)
-			{
-				if ($e->getCode() == 404)
-				{
-					JError::raiseError(404, $e->getMessage());
-				}
-				else
-				{
-					$this->setError($e);
-					$this->_category[$pk] = false;
-				}
-			}
-		}
-
-		return $this->_category[$pk];
-	}
-
-	/**
-	 * Get the parent of this category
-	 *
-	 * @param   integer $pk     The id of the type.
-	 * @param  integer  $parent The parent_id of the type.
-	 *
-	 * @return object
-	 *
-	 * @since  1.0.0
-	 */
-	public function &getParent($pk = null, $parent = null)
-	{
-		$pk = (!empty($pk)) ? $pk : (int) $this->getState('category.id');
-
-		if (!isset($this->_parent[$pk]))
-		{
-			$db = Factory::getDbo();
-			if (empty($parent))
-			{
-				$query = $db->getQuery(true)
-					->select('parent_id')
-					->from('#__discussions_categories')
-					->where('id = ' . (int) $pk);
-				$db->setQuery($query);
-				$parent = $db->loadResult();
-			}
-			try
-			{
-				if ($parent > 1)
-				{
-					$query = $db->getQuery(true)
-						->select(array('id', 'title', 'alias', 'parent_id'))
-						->from('#__discussions_categories')
-						->where('id = ' . (int) $parent);
-
-					$db->setQuery($query);
-					$item = $db->loadObject();
-
-					if ($item)
-					{
-
-						$item->link = Route::_(DiscussionsHelperRoute::getTopicsRoute($item->id));
-
-
-						$this->_parent[$pk] = $item;
-					}
-					else
-					{
-						$this->_parent[$pk] = false;
-					}
-				}
-				elseif ($parent == 1)
-				{
-					$root            = new stdClass();
-					$root->id        = 1;
-					$root->alias     = 'root';
-					$root->title     = Text::_('COM_DISCUSSIONS_CATEGORY_ROOT');
-					$root->parent_id = 0;
-
-					$this->_parent[$pk] = $root;
-				}
-				else
-				{
-					$this->_parent[$pk] = false;
-				}
-
-			}
-			catch (Exception $e)
-			{
-				if ($e->getCode() == 404)
-				{
-					JError::raiseError(404, $e->getMessage());
-				}
-				else
-				{
-					$this->setError($e);
-					$this->_parent[$pk] = false;
-				}
-			}
-		}
-
-		return $this->_parent[$pk];
 	}
 
 	/**
@@ -467,31 +286,14 @@ class DiscussionsModelTopics extends ListModel
 			}
 		}
 
-		// Filter by category
-		$category = $this->getState('filter.category');
-		if ($category > 1)
+		// Filter by tag.
+		$tag = (int) $this->getState('tag.id');
+		if ($tag > 1)
 		{
-			$categoryTags = $this->getCategoryTags($category);
-
-			$sql = array();
-			foreach ($categoryTags as $category => $tags)
-			{
-				if (!empty($tags))
-				{
-					$categorySql = array();
-
-					foreach ($tags as $tag)
-					{
-						$categorySql[] = $db->quoteName('t.tags_map') . ' LIKE ' . $db->quote('%[' . $tag . ']%');
-					}
-				}
-				$sql[] = '(' . implode(' AND ', $categorySql) . ')';
-			}
-
-			if (!empty($sql))
-			{
-				$query->where('(' . implode(' OR ', $sql) . ')');
-			}
+			$query->join('LEFT', $db->quoteName('#__contentitem_tag_map', 'tagmap')
+				. ' ON ' . $db->quoteName('tagmap.content_item_id') . ' = ' . $db->quoteName('t.id')
+				. ' AND ' . $db->quoteName('tagmap.type_alias') . ' = ' . $db->quote('com_discussions.topic'))
+				->where($db->quoteName('tagmap.tag_id') . ' = ' . $tag);
 		}
 
 		// Filter by search.
@@ -613,6 +415,100 @@ class DiscussionsModelTopics extends ListModel
 		return $this->getDbo()->loadObjectList('id');
 	}
 
+	/**
+	 * Get the current tag
+	 *
+	 * @param null $pk
+	 *
+	 * @return object|false
+	 *
+	 * @since 1.0.0
+	 */
+	public function getTag($pk = null)
+	{
+		if (!is_object($this->_tag))
+		{
+			$app = Factory::getApplication();
+			$pk  = (!empty($pk)) ? (int) $pk : (int) $this->getState('tag.id', $app->input->get('id', 1));
+
+			$root            = new stdClass();
+			$root->title     = Text::_('JGLOBAL_ROOT');
+			$root->id        = 1;
+			$root->parent_id = 0;
+			$root->link      = Route::_(DiscussionsHelperRoute::getTopicsRoute(1));
+			$root->addLink   = Route::_(DiscussionsHelperRoute::getTopicFormRoute());
+
+			$mainTag = ComponentHelper::getParams('com_info')->get('tags', 1);
+
+			$tag_id = ($pk > 1) ? $pk : $mainTag;
+
+			if ($tag_id > 1)
+			{
+				$errorRedirect = Route::_(DiscussionsHelperRoute::getTopicsRoute(1));
+				$errorMsg      = Text::_('COM_DISCUSSION_ERROR_TAG_NOT_FOUND');
+				try
+				{
+					$db    = $this->getDbo();
+					$query = $db->getQuery(true)
+						->select(array('t.id', 't.parent_id', 't.title', 'pt.title as parent_title'))
+						->from('#__tags AS t')
+						->where('t.id = ' . (int) $tag_id)
+						->join('LEFT', '#__tags AS pt ON pt.id = t.parent_id');
+
+					$user = Factory::getUser();
+					if (!$user->authorise('core.admin'))
+					{
+						$query->where('t.access IN (' . implode(',', $user->getAuthorisedViewLevels()) . ')');
+					}
+					if (!$user->authorise('core.manage', 'com_tags'))
+					{
+						$query->where('t.published =  1');
+					}
+
+					$db->setQuery($query);
+					$data = $db->loadObject();
+
+					if (empty($data))
+					{
+						$app->redirect($url = $errorRedirect, $msg = $errorMsg, $msgType = 'error', $moved = true);
+
+						return false;
+					}
+					if ($data->id == $mainTag)
+					{
+						$root->title = $data->title;
+
+						$data = $root;
+					}
+
+
+					$data->link = Route::_(DiscussionsHelperRoute::getTopicsRoute($data->id));
+					$data->addLink   = Route::_(DiscussionsHelperRoute::getTopicFormRoute());
+
+					$this->_tag = $data;
+				}
+				catch (Exception $e)
+				{
+					if ($e->getCode() == 404)
+					{
+						$app->redirect($url = $errorRedirect, $msg = $errorMsg, $msgType = 'error', $moved = true);
+					}
+					else
+					{
+						$this->setError($e);
+						$this->_tag = false;
+					}
+				}
+			}
+			else
+			{
+				$this->_tag = $root;
+			}
+		}
+
+		return $this->_tag;
+	}
+
 
 	/**
 	 * Method to get Authors
@@ -719,54 +615,6 @@ class DiscussionsModelTopics extends ListModel
 	}
 
 	/**
-	 * Method to get an array of categorytags.
-	 *
-	 * @param int $pk category id
-	 *
-	 * @return  mixed  An array of data items on success, false on failure.
-	 *
-	 * @since  1.0.0
-	 */
-	public function getCategoryTags($pk = null)
-	{
-		$pk = (!empty($pk)) ? $pk : $this->getState('filter.category');
-		if (!isset($this->_categoryTags[$pk]))
-		{
-			try
-			{
-				$tags = array();
-				if (!empty($pk))
-				{
-					$db    = Factory::getDbo();
-					$query = $db->getQuery(true)
-						->select(array('c.id', 'c.items_tags'))
-						->from($db->quoteName('#__discussions_categories', 'c'))
-						->where($db->quoteName('c.alias') . ' <> ' . $db->quote('root'))
-						->join('LEFT', '#__discussions_categories as this ON c.lft > this.lft AND c.rgt < this.rgt')
-						->where('(this.id = ' . (int) $pk . ' OR c.id = ' . $pk . ')');
-					$db->setQuery($query);
-					$categories = $db->loadObjectList();
-
-					foreach ($categories as $category)
-					{
-						$tags[$category->id] = array_unique(explode(',', $category->items_tags));
-					}
-
-				}
-				$this->_categoryTags[$pk] = $tags;
-			}
-			catch (Exception $e)
-			{
-				$this->setError($e);
-				$this->_categoryTags[$pk] = false;
-			}
-		}
-
-		return $this->_categoryTags[$pk];
-	}
-
-
-	/**
 	 * Gets the value of a user state variable and sets it in the session
 	 *
 	 * This is the same as the method in \JApplication except that this also can optionally
@@ -795,4 +643,29 @@ class DiscussionsModelTopics extends ListModel
 
 		return $set_state;
 	}
+	/**
+	 * Get the filter form
+	 *
+	 * @param   array   $data     data
+	 * @param   boolean $loadData load current data
+	 *
+	 * @return  Form|boolean  The Form object or false on error
+	 *
+	 * @since 1.0.0
+	 */
+	public function getFilterForm($data = array(), $loadData = true)
+	{
+		if ($form = parent::getFilterForm())
+		{
+			$params = $this->getState('params');
+			if ($params->get('search_placeholder', ''))
+			{
+				$form->setFieldAttribute('search', 'hint', $params->get('search_placeholder'), 'filter');
+			}
+			$form->setValue('tag', 'filter', $this->getState('tag.id', 1));
+		}
+		return $form;
+	}
+
+
 }

@@ -75,8 +75,7 @@ class DiscussionsControllerTopic extends FormController
 		$app      = Factory::getApplication();
 		$data     = $this->input->post->get('jform', array(), 'array');
 		$id       = $app->input->getInt('id');
-		$catid    = $app->input->getInt('catid');
-		$category = $app->input->getInt('category', $data['category']);
+		$tag_id    = $app->input->getInt('tag_id');
 
 		if ($result)
 		{
@@ -84,7 +83,7 @@ class DiscussionsControllerTopic extends FormController
 		}
 
 		$return = ($result) ? DiscussionsHelperRoute::getTopicRoute($id) :
-			DiscussionsHelperRoute::getTopicFormRoute($id, $catid, $category);
+			DiscussionsHelperRoute::getTopicFormRoute($id, $tag_id);
 		$this->setRedirect(Route::_($return));
 
 		return $result;

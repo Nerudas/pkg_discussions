@@ -36,14 +36,6 @@ class DiscussionsViewTopic extends HtmlView
 	 */
 	protected $item;
 
-	/**
-	 * The categories array
-	 *
-	 * @var  array
-	 *
-	 * @since  1.0.0
-	 */
-	protected $categories;
 
 	/**
 	 * The model state
@@ -78,7 +70,6 @@ class DiscussionsViewTopic extends HtmlView
 		$this->form       = $this->get('Form');
 		$this->item       = $this->get('Item');
 		$this->state      = $this->get('State');
-		$this->categories = $this->get('Categories');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -89,23 +80,6 @@ class DiscussionsViewTopic extends HtmlView
 		$this->addToolbar();
 
 		return parent::display($tpl);
-	}
-
-	/**
-	 * Returns the categories array
-	 *
-	 * @return  mixed  array
-	 *
-	 * @since  1.0.0
-	 */
-	public function getCategories()
-	{
-		if (!is_array($this->categories))
-		{
-			$this->categories = $this->get('Categories');
-		}
-
-		return $this->categories;
 	}
 
 	/**

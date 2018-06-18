@@ -63,6 +63,5 @@
 	</administration>
 	<media destination="com_discussions" folder="media">
 		<folder>css</folder>
-		<folder>js</folder>
 	</media>
 </extension>

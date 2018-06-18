@@ -40,7 +40,6 @@
 		<field name="created" type="hidden" readonly="true"/>
 		<field name="hits" type="hidden" readonly="true"/>
 		<field name="id" type="hidden" default="0" readonly="true"/>
-		<field name="category" type="hidden" default="0"/>
 		<field name="metakey" type="hidden" readonly="true"/>
 		<field name="metadesc" type="hidden" readonly="true"/>
 		<fields name="metadata">

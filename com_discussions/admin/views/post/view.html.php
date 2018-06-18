@@ -68,7 +68,6 @@ class DiscussionsViewPost extends HtmlView
 		$this->form       = $this->get('Form');
 		$this->item       = $this->get('Item');
 		$this->state      = $this->get('State');
-		$this->categories = $this->get('Categories');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))

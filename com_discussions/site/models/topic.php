@@ -209,7 +209,7 @@ class DiscussionsModelTopic extends ListModel
 	{
 		$pk = (!empty($pk)) ? $pk : (int) $this->getState('topic.id');
 
-		if (!isset($this->_category[$pk]))
+		if (!isset($this->_topic[$pk]))
 		{
 			$app  = Factory::getApplication();
 			$user = Factory::getUser();

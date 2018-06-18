@@ -8,12 +8,10 @@
 
 	<fields name="request" addfieldpath="/administrator/components/com_discussions/models/fields">
 		<fieldset name="request">
-			<field name="id" type="discussionscategory"
-				   label="COM_DISCUSSIONS_CATEGORY"
+			<field name="id" type="discussionstags"
+				   label="JTAG"
 				   default="1"
-				   required="true">
-				<option value="1">JGLOBAL_ROOT</option>
-			</field>
+				   required="true"/>
 		</fieldset>
 	</fields>
 

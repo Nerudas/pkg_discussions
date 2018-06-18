@@ -4,8 +4,9 @@
 		<field name="search" type="text"
 			   label="JSEARCH_FILTER"
 			   hint="JSEARCH_FILTER"/>
-		<field name="category" type="discussionscategory"
-			   label="COM_DISCUSSIONS_CATEGORY"
+
+		<field name="tag" type="discussionstags"
+			   label="JTAG"
 			   links="true"/>
 
 		<!--<field name="allregions" type="checkbox" label="COM_DISCUSSIONS_ALLREGIONS" value="1"/>-->

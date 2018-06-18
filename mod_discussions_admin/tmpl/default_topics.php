@@ -55,7 +55,7 @@ $canDo   = DiscussionsHelper::getActions('com_discussions');
 		<tr item-id="<?php echo $item->id ?>">
 			<td>
 				<div>
-					<?php if ($canDo->get('core.edit')): ?>
+					<?php if ($canDo->get('core.edit') && empty($item->context) && empty($item->item_id)): ?>
 						<a class="hasTooltip" title="<?php echo Text::_('JACTION_EDIT'); ?>"
 						   href="<?php echo Route::_('index.php?option=com_discussions&task=topic.edit&id=' . $item->id); ?>">
 							<?php echo $item->title; ?>

@@ -16,6 +16,7 @@ use Joomla\CMS\Component\Router\RouterViewConfiguration;
 use Joomla\CMS\Component\Router\Rules\MenuRules;
 use Joomla\CMS\Component\Router\Rules\NomenuRules;
 use Joomla\CMS\Component\Router\Rules\StandardRules;
+use Joomla\CMS\Component\ComponentHelper;
 
 class DiscussionsRouter extends RouterView
 {
@@ -36,12 +37,12 @@ class DiscussionsRouter extends RouterView
 
 		// Topic Form route
 		$topicForm = new RouterViewConfiguration('topicform');
-		$topicForm->setKey('catid')->setParent($topics, 'catid');
+		$topicForm->setKey('tag_id')->setParent($topics, 'tag_id');
 		$this->registerView($topicForm);
 
 		// Topic route
 		$topic = new RouterViewConfiguration('topic');
-		$topic->setKey('id')->setParent($topics, 'catid');
+		$topic->setKey('id')->setParent($topics, 'tag_id');
 		$this->registerView($topic);
 
 		// Post Form route
@@ -60,7 +61,7 @@ class DiscussionsRouter extends RouterView
 	/**
 	 * Method to get the segment(s) for a items
 	 *
-	 * @param   string $id    ID of the category to retrieve the segments for
+	 * @param   string $id    ID of the tag to retrieve the segments for
 	 * @param   array  $query The request that is built right now
 	 *
 	 * @return  array|string  The segments of this item
@@ -70,22 +71,19 @@ class DiscussionsRouter extends RouterView
 	public function getTopicsSegment($id, $query)
 	{
 		$path = array();
-
-		while ($id > 1)
+		if ($id > 0)
 		{
 			$db      = Factory::getDbo();
 			$dbquery = $db->getQuery(true)
 				->select(array('id', 'alias', 'parent_id'))
-				->from('#__discussions_categories')
+				->from('#__tags')
 				->where('id =' . $id);
 			$db->setQuery($dbquery);
-			$category = $db->loadObject();
-
-			if ($category)
+			$tag = $db->loadObject();
+			if ($tag)
 			{
-				$path[$category->id] = $category->alias;
+				$path[$tag->id] = $tag->alias;
 			}
-			$id = ($category) ? $category->parent_id : 1;
 		}
 		$path[1] = 'root';
 
@@ -158,25 +156,22 @@ class DiscussionsRouter extends RouterView
 	{
 		if (isset($query['id']))
 		{
-			$parent = $query['id'];
-
-			$db      = Factory::getDbo();
-			$dbquery = $db->getQuery(true)
-				->select(array('alias', 'id'))
-				->from('#__discussions_categories')
-				->where($db->quoteName('parent_id') . ' =' . $db->quote($parent));
-			$db->setQuery($dbquery);
-			$categories = $db->loadObjectList();
-
-			foreach ($categories as $category)
+			$tags = ComponentHelper::getParams('com_discussions')->get('tags');
+			// Get tags
+			if (!empty($tags) && is_array($tags))
 			{
-				if ($category->alias == $segment)
-				{
-					return $category->id;
-				}
+				$db      = Factory::getDbo();
+				$dbquery = $db->getQuery(true)
+					->select('t.id')
+					->from($db->quoteName('#__tags', 't'))
+					->where($db->quoteName('t.alias') . ' <>' . $db->quote('root'))
+					->where('t.id IN (' . implode(',', $tags) . ')')
+					->where($db->quoteName('alias') . ' = ' . $db->quote($segment));
+				$db->setQuery($dbquery);
+				$id = $db->loadResult();
+				return (!empty($id)) ? $id : false;
 			}
 		}
-
 		return false;
 	}
 

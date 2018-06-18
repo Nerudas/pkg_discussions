@@ -14,7 +14,6 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Layout\LayoutHelper;
 
 $app = Factory::getApplication();
 $doc = Factory::getDocument();
@@ -37,7 +36,7 @@ $doc->addScriptDeclaration('
 	  method="post"
 	  name="adminForm" id="item-form" class="form-validate" enctype="multipart/form-data">
 	<?php echo $this->form->renderField('title'); ?>
-	<?php echo LayoutHelper::render('components.com_discussions.form.categories', $this); ?>
+	<?php echo $this->form->renderField('tags'); ?>
 	<?php echo $this->form->renderField('text'); ?>
 
 	<?php echo $this->form->renderField('images'); ?>

@@ -264,6 +264,7 @@ class com_DiscussionsInstallerScript
 			'/administrator/components/com_discussions/views/categories',
 			'/administrator/components/com_discussions/views/category',
 			'/images/discussions/categories',
+			'/media/com_discussions/js',
 		);
 		foreach ($folders as $folder)
 		{
@@ -283,6 +284,11 @@ class com_DiscussionsInstallerScript
 			'/administrator/components/com_discussions/models/forms/category.xml',
 			'/administrator/components/com_discussions/tables/categories.php',
 			'/components/com_discussions/models/fields/discussionscategory.php',
+			'/components/com_discussions/views/topicform/tmpl/default_categories.php',
+			'/media/com_discussions/css/admin-category.css',
+			'/media/com_discussions/css/admin-category.min.css',
+			'/media/com_discussions/css/form-categories.css',
+			'/media/com_discussions/css/form-categories.min.css',
 		);
 		foreach ($files as $file)
 		{

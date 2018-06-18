@@ -48,29 +48,6 @@ class DiscussionsModelTopic extends AdminModel
 	}
 
 	/**
-	 * Method to auto-populate the model state.
-	 *
-	 * Note. Calling getState in this method will result in recursion.
-	 *
-	 *
-	 * @return  void
-	 *
-	 * @since  1.0.0
-	 */
-	protected function populateState()
-	{
-		$app = Factory::getApplication();
-		$pk  = $app->input->getInt('id', 0);
-		if (empty($pk))
-		{
-			$default_category = $app->input->getInt('category', 1);
-			$this->setState('category.default', $default_category);
-		}
-
-		parent::populateState();
-	}
-
-	/**
 	 * Method to get a single record.
 	 *
 	 * @param   integer $pk The id of the primary key.
