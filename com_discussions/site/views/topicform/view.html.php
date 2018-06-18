@@ -70,9 +70,9 @@ class DiscussionsViewTopicForm extends HtmlView
 		$user = Factory::getUser();
 
 		// Get model data.
-		$this->form       = $this->get('Form');
-		$this->item       = $this->get('Item');
-		$this->state      = $this->get('State');
+		$this->form        = $this->get('Form');
+		$this->item        = $this->get('Item');
+		$this->state       = $this->get('State');
 		$this->link        = DiscussionsHelperRoute::getTopicFormRoute($this->state->get('topic.id'), $this->state->get('topic.id'));
 		$this->return_page = $this->get('ReturnPage');
 
@@ -132,7 +132,7 @@ class DiscussionsViewTopicForm extends HtmlView
 	{
 		$app        = Factory::getApplication();
 		$link       = $this->link;
-		$breadcrumb = ($this->item->id) ? Text::_('COM_DISCUSSIONS_EDIT') : Text::_('COM_DISCUSSIONS_ADD');
+		$breadcrumb = ($this->item->id) ? Text::_('COM_DISCUSSIONS_TOPIC_EDIT') : Text::_('COM_DISCUSSIONS_TOPIC_ADD');
 		$pathway    = $app->getPathway();
 		$pathway->addItem($breadcrumb, $link);
 
