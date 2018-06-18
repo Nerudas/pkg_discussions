@@ -99,6 +99,45 @@ class DiscussionsHelperTopic
 			$model = self::getTopicModel();
 			$model->setState('topic.id', $topic_id);
 
+			// Check state & access
+			if (!empty($topic_id) && is_numeric($topic_id))
+			{
+				$user  = Factory::getUser();
+				$db    = Factory::getDbo();
+				$query = $db->getQuery(true)
+					->select('id')
+					->from('#__discussions_topics')
+					->where('id = ' . (int) $topic_id);
+
+				if (!$user->authorise('core.admin'))
+				{
+					$groups = implode(',', $user->getAuthorisedViewLevels());
+					$query->where('access IN (' . $groups . ')');
+				}
+
+				$published = $model->getState('filter.published');
+				if (!empty($published))
+				{
+					if (is_numeric($published))
+					{
+						$query->where('( state = ' . (int) $published .
+							' OR (created_by > 0 AND created_by = ' . $user->id . ' AND state IN (0,1)))');
+					}
+					elseif (is_array($published))
+					{
+						$query->where('state IN (' . implode(',', $published) . ')');
+					}
+				}
+
+				$db->setQuery($query);
+				if (empty($db->loadResult()))
+				{
+					self::$_integration[$key] = false;
+
+					return self::$_integration[$key];
+				}
+			}
+
 			$items      = $model->getItems();
 			$total      = $model->getTotal();
 			$pagination = $model->getPagination();
