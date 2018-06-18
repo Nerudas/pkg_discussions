@@ -75,15 +75,15 @@ class DiscussionsHelperRoute extends RouteHelper
 	 *
 	 * @param  int $id       Item ID
 	 * @param  int $topic_id Topic ID
-	 * @param  int $catid    Category ID
+	 * @param int  $tag_id Tag ID
 	 *
 	 * @return  string
 	 *
 	 * @since  1.0.0
 	 */
-	public static function getPostFormRoute($id = null, $topic_id, $catid = 1)
+	public static function getPostFormRoute($id = null, $topic_id, $tag_id = 1)
 	{
-		$link = 'index.php?option=com_discussions&view=postform&topic_id=' . $topic_id . '&catid=' . $catid;
+		$link = 'index.php?option=com_discussions&view=postform&topic_id=' . $topic_id . '&tag_id=' . $tag_id;
 		if (!empty($id))
 		{
 			$link .= '&id=' . $id;
