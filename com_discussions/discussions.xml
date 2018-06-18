@@ -40,7 +40,6 @@
 		<submenu>
 			<menu option="com_discussions" view="posts">COM_DISCUSSIONS_POSTS</menu>
 			<menu option="com_discussions" view="topics">COM_DISCUSSIONS_TOPICS</menu>
-			<menu option="com_discussions" view="categories">COM_DISCUSSIONS_CATEGORIES</menu>
 		</submenu>
 		<files folder="admin">
 			<folder>controllers</folder>

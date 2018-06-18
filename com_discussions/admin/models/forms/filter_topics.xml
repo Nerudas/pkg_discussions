@@ -12,10 +12,6 @@
 			<option value="">JOPTION_SELECT_ACCESS</option>
 		</field>
 		<field name="created_by" type="user"/>
-		<field name="category" type="discussionscategory" onchange="this.form.submit();" default="">
-			<option value="">JOPTION_SELECT_CATEGORY</option>
-			<option value="without">COM_DISCUSSIONS_CATEGORY_WITHOUT</option>
-		</field>
 		<field name="region" type="regions" show_null="true" onchange="this.form.submit();"/>
 	</fields>
 

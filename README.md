@@ -14,9 +14,6 @@ Thank you for your understanding.
 * **Discussions Component**  
 Component for creating Discussions section on the site
 
-* **Discussions - Categories Module**  
-Module for displaying discussions categories
-
 * **Discussions - Administrator Module**  
 Module for displaying information about discussions in the admin panel
 

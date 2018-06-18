@@ -33,6 +33,7 @@ class com_DiscussionsInstallerScript
 		$this->tagsIntegration();
 		$this->createImageFolder();
 		$this->moveLayouts($path);
+
 		return true;
 	}
 
@@ -66,67 +67,6 @@ class com_DiscussionsInstallerScript
 	protected function tagsIntegration()
 	{
 		$db = Factory::getDbo();
-
-		// Category
-		$query = $db->getQuery(true)
-			->select('type_id')
-			->from($db->quoteName('#__content_types'))
-			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_discussions.category'));
-		$db->setQuery($query);
-		$current_id = $db->loadResult();
-
-		$category                                               = new stdClass();
-		$category->type_id                                      = (!empty($current_id)) ? $current_id : '';
-		$category->type_title                                   = 'Discussions Category';
-		$category->type_alias                                   = 'com_discussions.category';
-		$category->table                                        = new stdClass();
-		$category->table->special                               = new stdClass();
-		$category->table->special->dbtable                      = '#__discussions_categories';
-		$category->table->special->key                          = 'id';
-		$category->table->special->type                         = 'Categories';
-		$category->table->special->prefix                       = 'DiscussionsTable';
-		$category->table->special->config                       = 'array()';
-		$category->table->common                                = new stdClass();
-		$category->table->common->dbtable                       = '#__ucm_content';
-		$category->table->common->key                           = 'ucm_id';
-		$category->table->common->type                          = 'Corecontent';
-		$category->table->common->prefix                        = 'JTable';
-		$category->table->common->config                        = 'array()';
-		$category->table                                        = json_encode($category->table);
-		$category->rules                                        = '';
-		$category->field_mappings                               = new stdClass();
-		$category->field_mappings->common                       = new stdClass();
-		$category->field_mappings->common->core_content_item_id = 'id';
-		$category->field_mappings->common->core_title           = 'title';
-		$category->field_mappings->common->core_state           = 'state';
-		$category->field_mappings->common->core_alias           = 'alias';
-		$category->field_mappings->common->core_created_time    = 'null';
-		$category->field_mappings->common->core_modified_time   = 'null';
-		$category->field_mappings->common->core_body            = 'null';
-		$category->field_mappings->common->core_hits            = 'null';
-		$category->field_mappings->common->core_publish_up      = 'null';
-		$category->field_mappings->common->core_publish_down    = 'null';
-		$category->field_mappings->common->core_access          = 'access';
-		$category->field_mappings->common->core_params          = 'attribs';
-		$category->field_mappings->common->core_featured        = 'null';
-		$category->field_mappings->common->core_metadata        = 'metadata';
-		$category->field_mappings->common->core_language        = 'null';
-		$category->field_mappings->common->core_images          = 'null';
-		$category->field_mappings->common->core_urls            = 'null';
-		$category->field_mappings->common->core_version         = 'null';
-		$category->field_mappings->common->core_ordering        = 'lft';
-		$category->field_mappings->common->core_metakey         = 'metakey';
-		$category->field_mappings->common->core_metadesc        = 'metadesc';
-		$category->field_mappings->common->core_catid           = 'null';
-		$category->field_mappings->common->core_xreference      = 'null';
-		$category->field_mappings->common->asset_id             = 'null';
-		$category->field_mappings->special                      = new stdClass();
-		$category->field_mappings                               = json_encode($category->field_mappings);
-		$category->router                                       = 'DiscussionsHelperRoute::getTopicsRoute';
-		$category->content_history_options                      = '';
-
-		(!empty($current_id)) ? $db->updateObject('#__content_types', $category, 'type_id')
-			: $db->insertObject('#__content_types', $category);
 
 		// Topic
 		$query = $db->getQuery(true)
@@ -228,31 +168,16 @@ class com_DiscussionsInstallerScript
 		// Remove content_type
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__content_types'))
-			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_discussions.category'));
-		$db->setQuery($query)->execute();
-
-		$query = $db->getQuery(true)
-			->delete($db->quoteName('#__content_types'))
 			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_discussions.topic'));
 		$db->setQuery($query)->execute();
 
 		// Remove tag_map
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__contentitem_tag_map'))
-			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_discussions.category'));
-		$db->setQuery($query)->execute();
-
-		$query = $db->getQuery(true)
-			->delete($db->quoteName('#__contentitem_tag_map'))
 			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_discussions.topic'));
 		$db->setQuery($query)->execute();
 
 		// Remove ucm_content
-		$query = $db->getQuery(true)
-			->delete($db->quoteName('#__ucm_content'))
-			->where($db->quoteName('core_type_alias') . ' = ' . $db->quote('com_discussions.category'));
-		$db->setQuery($query)->execute();
-
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__ucm_content'))
 			->where($db->quoteName('core_type_alias') . ' = ' . $db->quote('com_discussions.topic'));
@@ -296,6 +221,74 @@ class com_DiscussionsInstallerScript
 							JLog::WARNING, 'jerror');
 					}
 				}
+			}
+		}
+	}
+
+	/**
+	 * Change database structure && delete association
+	 *
+	 * @param  \stdClass $parent - Parent object calling object.
+	 *
+	 * @return void
+	 *
+	 * @since  1.0.4
+	 */
+	public function update($parent)
+	{
+		$db = Factory::getDbo();
+
+		// Remove ucm_content
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ucm_content'))
+			->where($db->quoteName('core_type_alias') . ' = ' . $db->quote('com_discussions.category'));
+		$db->setQuery($query)->execute();
+
+		// Remove tag_map
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__contentitem_tag_map'))
+			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_discussions.category'));
+		$db->setQuery($query)->execute();
+
+		// Remove content_type
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__content_types'))
+			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_discussions.category'));
+		$db->setQuery($query)->execute();
+
+		// Remove table
+		$db->setQuery('DROP TABLE IF EXISTS `#__discussions_categories`')->execute();
+
+		// Remove folders
+		$folders = array(
+			'/administrator/components/com_discussions/views/categories',
+			'/administrator/components/com_discussions/views/category',
+			'/images/discussions/categories',
+		);
+		foreach ($folders as $folder)
+		{
+			if (JFolder::exists(JPATH_ROOT . $folder))
+			{
+				JFolder::delete(JPATH_ROOT . $folder);
+			}
+		}
+
+		$files = array(
+			'/administrator/components/com_discussions/controllers/categories.php',
+			'/administrator/components/com_discussions/controllers/category.php',
+			'/administrator/components/com_discussions/models/categories.php',
+			'/administrator/components/com_discussions/models/category.php',
+			'/administrator/components/com_discussions/models/fields/discussionscategory.php',
+			'/administrator/components/com_discussions/models/forms/filter_categories.xml',
+			'/administrator/components/com_discussions/models/forms/category.xml',
+			'/administrator/components/com_discussions/tables/categories.php',
+			'/components/com_discussions/models/fields/discussionscategory.php',
+		);
+		foreach ($files as $file)
+		{
+			if (JFile::exists(JPATH_ROOT . $file))
+			{
+				JFile::delete(JPATH_ROOT . $file);
 			}
 		}
 	}

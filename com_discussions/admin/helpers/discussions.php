@@ -33,9 +33,5 @@ class DiscussionsHelper extends ContentHelper
 		JHtmlSidebar::addEntry(Text::_('COM_DISCUSSIONS_TOPICS'),
 			'index.php?option=com_discussions&view=topics',
 			$vName == 'topics');
-
-		JHtmlSidebar::addEntry(Text::_('COM_DISCUSSIONS_CATEGORIES'),
-			'index.php?option=com_discussions&view=categories',
-			$vName == 'categories');
 	}
 }

@@ -13,20 +13,11 @@ defined('_JEXEC') or die;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\TagsHelper;
-
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Uri\Uri;
 
 class DiscussionsModelTopics extends ListModel
 {
-	/**
-	 * Category tags
-	 *
-	 * @var    array
-	 * @since  1.0.0
-	 */
-	protected $_categoryTags = null;
-
 	/**
 	 * Constructor.
 	 *
@@ -92,9 +83,6 @@ class DiscussionsModelTopics extends ListModel
 		$region = $this->getUserStateFromRequest($this->context . '.filter.region', 'filter_region', '');
 		$this->setState('filter.region', $region);
 
-		$category = $this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category', '');
-		$this->setState('filter.category', $category);
-
 		// List state information.
 		$ordering  = empty($ordering) ? 't.created' : $ordering;
 		$direction = empty($direction) ? 'desc' : $direction;
@@ -121,7 +109,6 @@ class DiscussionsModelTopics extends ListModel
 		$id .= ':' . $this->getState('filter.published');
 		$id .= ':' . $this->getState('filter.created_by');
 		$id .= ':' . $this->getState('filter.region');
-		$id .= ':' . $this->getState('filter.category');
 
 		return parent::getStoreId($id);
 	}
@@ -213,36 +200,6 @@ class DiscussionsModelTopics extends ListModel
 			$query->where('t.created_by = ' . (int) $created_by);
 		}
 
-		// Filter by category
-		$category = $this->getState('filter.category');
-		if ($category > 1 || $category == 'without')
-		{
-			$categoryTags = $this->getCategoryTags($category);
-
-			$sql = array();
-			foreach ($categoryTags as $tags)
-			{
-				if (!empty($tags))
-				{
-					$categorySql = array();
-					$operator    = ($category != 'without') ? ' LIKE ' : ' NOT LIKE ';
-					foreach ($tags as $tag)
-					{
-
-						$categorySql[] = $db->quoteName('t.tags_map') . $operator . $db->quote('%[' . $tag . ']%');
-					}
-				}
-				$operator = ($category != 'without') ? ' AND ' : ' OR ';
-				$sql[]    = '(' . implode($operator, $categorySql) . ')';
-			}
-
-			if (!empty($sql))
-			{
-				$operator = ($category != 'without') ? ' OR ' : ' AND ';
-				$query->where('(' . implode($operator, $sql) . ')');
-			}
-		}
-
 		// Filter by search.
 		$search = $this->getState('filter.search');
 		if (!empty($search))
@@ -304,55 +261,4 @@ class DiscussionsModelTopics extends ListModel
 
 		return $items;
 	}
-
-	/**
-	 * Method to get an array of category tags.
-	 *
-	 * @param int $pk category id
-	 *
-	 * @return  mixed  An array of data items on success, false on failure.
-	 *
-	 * @since  1.0.0
-	 */
-	public function getCategoryTags($pk = null)
-	{
-		$pk = (!empty($pk)) ? $pk : $this->getState('filter.category');
-		if (!isset($this->_categoryTags[$pk]))
-		{
-			try
-			{
-				$tags = array();
-				if (!empty($pk))
-				{
-					$db    = Factory::getDbo();
-					$query = $db->getQuery(true)
-						->select(array('c.id', 'c.items_tags'))
-						->from($db->quoteName('#__discussions_categories', 'c'))
-						->where($db->quoteName('c.alias') . ' <> ' . $db->quote('root'));
-					if ($pk != 'without')
-					{
-						$query->join('LEFT', '#__discussions_categories as this ON c.lft > this.lft AND c.rgt < this.rgt')
-							->where('(this.id = ' . (int) $pk . ' OR c.id = ' . $pk . ')');
-					}
-					$db->setQuery($query);
-					$categories = $db->loadObjectList();
-
-					foreach ($categories as $category)
-					{
-						$tags[$category->id] = array_unique(explode(',', $category->items_tags));
-					}
-
-				}
-				$this->_categoryTags[$pk] = $tags;
-			}
-			catch (Exception $e)
-			{
-				$this->setError($e);
-				$this->_categoryTags[$pk] = false;
-			}
-		}
-
-		return $this->_categoryTags[$pk];
-	}
-
 }
