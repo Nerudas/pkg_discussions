@@ -33,8 +33,6 @@ class com_DiscussionsInstallerScript
 		$this->tagsIntegration();
 		$this->createImageFolder();
 		$this->moveLayouts($path);
-		$this->createRootCategory();
-
 		return true;
 	}
 
@@ -59,39 +57,6 @@ class com_DiscussionsInstallerScript
 			}
 		}
 	}
-
-	/**
-	 * Create root category
-	 *
-	 * @since  1.0.0
-	 */
-	protected function createRootCategory()
-	{
-		$db = Factory::getDbo();
-
-		// Category
-		$query = $db->getQuery(true)
-			->select('id')
-			->from($db->quoteName('#__discussions_categories'))
-			->where($db->quoteName('id') . ' = ' . $db->quote(1));
-		$db->setQuery($query);
-		$current_id = $db->loadResult();
-
-		$root            = new stdClass();
-		$root->id        = 1;
-		$root->parent_id = 0;
-		$root->lft       = 0;
-		$root->rgt       = 1;
-		$root->level     = 0;
-		$root->path      = '';
-		$root->alias     = 'root';
-		$root->access    = 1;
-		$root->state     = 1;
-
-		(!empty($current_id)) ? $db->updateObject('#__discussions_categories', $root, 'id')
-			: $db->insertObject('#__discussions_categories', $root);
-	}
-
 
 	/**
 	 * Create or update tags integration
