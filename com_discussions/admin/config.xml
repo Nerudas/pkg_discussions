@@ -2,6 +2,12 @@
 <config>
 	<fieldset name="global" label="JGLOBAL_FIELDSET_OPTIONS">
 		<field name="sef_advanced" type="hidden" default="1"/>
+		<field name="topic_tags" type="sql"
+			   label="COM_DISCUSSIONS_PARAMS_TOPIC_TAGS"
+			   query="SELECT id, title FROM #__tags WHERE level = 1"
+			   key_field="id"
+			   value_field="title"
+			   multiple="true"/>
 		<field name="topics_limit" type="list"
 			   label="COM_DISCUSSIONS_PARAMS_TOPICS_LIMIT"
 			   default="10">
@@ -44,6 +50,12 @@
 			   label="COM_DISCUSSIONS_PARAMS_TOPICFORM_LAYOUT"
 			   extension="com_discussions"
 			   view="topicform"/>
+	</fieldset>
+	<fieldset name="navigation" label="COM_DISCUSSIONS_PARAMS_NAVIGATION">
+		<field name="root_title" label="COM_DISCUSSIONS_PARAMS_ROOT_TITLE" default="COM_DISCUSSIONS_TOPICS_ALL"/>
+		<field name="tags" type="advtags"
+			   label="JTAG"
+			   multiple="true"/>
 	</fieldset>
 	<fieldset name="permissions"
 			  label="JCONFIG_PERMISSIONS_LABEL"

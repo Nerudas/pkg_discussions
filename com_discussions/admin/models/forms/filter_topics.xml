@@ -13,6 +13,11 @@
 		</field>
 		<field name="created_by" type="user"/>
 		<field name="region" type="regions" show_null="true" onchange="this.form.submit();"/>
+		<field name="tags" type="advtags"
+			   layout="joomla.form.field.advtags.select"
+			   multiple="true"
+			   class="multipleTags"
+			   onchange="this.form.submit();"/>
 	</fields>
 
 	<fields name="list">

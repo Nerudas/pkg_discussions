@@ -18,6 +18,8 @@ use Joomla\CMS\Layout\LayoutHelper;
 
 HTMLHelper::_('bootstrap.tooltip');
 HTMLHelper::_('behavior.multiselect');
+HTMLHelper::_('formbehavior.chosen', '.multipleTags', null,
+	array('placeholder_text_multiple' => Text::_('JOPTION_SELECT_TAG')));
 HTMLHelper::_('formbehavior.chosen', 'select');
 HTMLHelper::stylesheet('media/com_discussions/css/admin-topics.min.css', array('version' => 'auto'));
 

@@ -17,6 +17,7 @@ use Joomla\CMS\Helper\TagsHelper;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Component\ComponentHelper;
 
 class DiscussionsModelTopic extends AdminModel
 {
@@ -158,6 +159,14 @@ class DiscussionsModelTopic extends AdminModel
 		// Set update images link
 		$form->setFieldAttribute('images', 'saveurl',
 			Uri::base(true) . '/index.php?option=com_discussions&task=topic.updateImages&field=images&id=' . $id);
+
+
+		// Set Tags parents
+		$config = ComponentHelper::getParams('com_discussions');
+		if ($config->get('topic_tags'))
+		{
+			$form->setFieldAttribute('tags', 'parents', implode(',', $config->get('topic_tags')));
+		}
 
 		return $form;
 	}

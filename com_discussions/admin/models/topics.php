@@ -15,6 +15,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\TagsHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Utilities\ArrayHelper;
 
 class DiscussionsModelTopics extends ListModel
 {
@@ -83,6 +84,9 @@ class DiscussionsModelTopics extends ListModel
 		$region = $this->getUserStateFromRequest($this->context . '.filter.region', 'filter_region', '');
 		$this->setState('filter.region', $region);
 
+		$tags = $this->getUserStateFromRequest($this->context . '.filter.tags', 'filter_tags', '');
+		$this->setState('filter.tags', $tags);
+
 		// List state information.
 		$ordering  = empty($ordering) ? 't.created' : $ordering;
 		$direction = empty($direction) ? 'desc' : $direction;
@@ -109,6 +113,7 @@ class DiscussionsModelTopics extends ListModel
 		$id .= ':' . $this->getState('filter.published');
 		$id .= ':' . $this->getState('filter.created_by');
 		$id .= ':' . $this->getState('filter.region');
+		$id .= ':' . serialize($this->getState('filter.tags'));
 
 		return parent::getStoreId($id);
 	}
@@ -199,6 +204,22 @@ class DiscussionsModelTopics extends ListModel
 		{
 			$query->where('t.created_by = ' . (int) $created_by);
 		}
+
+		// Filter by tags.
+		$tags = $this->getState('filter.tags');
+		if (is_array($tags))
+		{
+			$tags = ArrayHelper::toInteger($tags);
+			$tags = implode(',', $tags);
+			if (!empty($tags))
+			{
+				$query->join('LEFT', $db->quoteName('#__contentitem_tag_map', 'tagmap')
+					. ' ON ' . $db->quoteName('tagmap.content_item_id') . ' = ' . $db->quoteName('t.id')
+					. ' AND ' . $db->quoteName('tagmap.type_alias') . ' = ' . $db->quote('com_discussions.topic'))
+					->where($db->quoteName('tagmap.tag_id') . ' IN (' . $tags . ')');
+			}
+		}
+
 
 		// Filter by search.
 		$search = $this->getState('filter.search');
