@@ -89,7 +89,8 @@ $columns = 9;
 				<tbody>
 
 				<?php foreach ($this->items as $i => $item) :
-					$canEdit = $user->authorise('core.edit', '#_discussions_topics.' . $item->id);
+					$canEdit = empty($item->context) && empty($item->item_id) &&
+						$user->authorise('core.edit', '#_discussions_topics.' . $item->id);
 					$canChange = $user->authorise('core.edit.state', '#__discussions_topics' . $item->id);
 					?>
 					<tr item-id="<?php echo $item->id ?>">
@@ -98,10 +99,17 @@ $columns = 9;
 						</td>
 						<td class="center">
 							<div class="btn-group">
-								<a class="btn btn-micro hasTooltip" title="<?php echo Text::_('JACTION_EDIT'); ?>"
-								   href="<?php echo Route::_('index.php?option=com_discussions&task=topic.edit&id=' . $item->id); ?>">
-									<span class="icon-apply icon-white"></span>
-								</a>
+								<?php if ($canEdit): ?>
+									<a class="btn btn-micro hasTooltip" title="<?php echo Text::_('JACTION_EDIT'); ?>"
+									   href="<?php echo Route::_('index.php?option=com_discussions&task=topic.edit&id=' . $item->id); ?>">
+										<span class="icon-apply icon-white"></span>
+									</a>
+								<?php else: ?>
+									<span class="btn btn-micro hasTooltip"
+										  title="<?php echo Text::_('JACTION_EDIT'); ?>">
+										<span class="icon-apply icon-white"></span>
+									</span>
+								<?php endif; ?>
 								<?php echo HTMLHelper::_('jgrid.published', $item->state, $i, 'topics.', $canChange, 'cb'); ?>
 								<?php
 								if ($canChange)

@@ -131,9 +131,7 @@ class DiscussionsModelTopics extends ListModel
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true)
 			->select('t.*')
-			->from($db->quoteName('#__discussions_topics', 't'))
-			->where($db->quoteName('context') . ' = ' . $db->quote(''))
-			->where($db->quoteName('item_id') . ' = ' . $db->quote(''));
+			->from($db->quoteName('#__discussions_topics', 't'));
 
 		// Join over the author.
 		$offline      = (int) ComponentHelper::getParams('com_profiles')->get('offline_time', 5) * 60;
