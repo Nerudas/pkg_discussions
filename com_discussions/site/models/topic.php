@@ -20,6 +20,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Helper\TagsHelper;
+use Joomla\Utilities\ArrayHelper;
 
 class DiscussionsModelTopic extends ListModel
 {
@@ -299,7 +300,7 @@ class DiscussionsModelTopic extends ListModel
 				$data->params->merge($registry);
 
 				// Get Tags
-				$mainTags    = ComponentHelper::getParams('com_discussions')->get('tags');
+				$mainTags   = ComponentHelper::getParams('com_discussions')->get('tags');
 				$data->tags = new TagsHelper;
 				$data->tags->getItemTags('com_discussions.topic', $data->id);
 				if (!empty($data->tags->itemTags))
