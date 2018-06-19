@@ -134,7 +134,7 @@ $columns = 9;
 							<div class="tags">
 								<?php if (!empty($item->tags->itemTags)): ?>
 									<?php foreach ($item->tags->itemTags as $tag): ?>
-										<span class="label label-inverse">
+										<span class="label label-<?php echo ($tag->main) ? 'success' : 'inverse' ?>">
 											<?php echo $tag->title; ?>
 										</span>
 									<?php endforeach; ?>

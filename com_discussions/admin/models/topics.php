@@ -263,6 +263,10 @@ class DiscussionsModelTopics extends ListModel
 		$items = parent::getItems();
 		if (!empty($items))
 		{
+			$mainTags = ComponentHelper::getParams('com_discussions')->get('tags');
+
+			echo '<pre>', print_r($mainTags, true), '</pre>';
+
 			foreach ($items as &$item)
 			{
 				$author_avatar       = (!empty($item->author_avatar) && JFile::exists(JPATH_ROOT . '/' . $item->author_avatar)) ?
@@ -275,6 +279,16 @@ class DiscussionsModelTopics extends ListModel
 				// Get Tags
 				$item->tags = new TagsHelper;
 				$item->tags->getItemTags('com_discussions.topic', $item->id);
+
+				if (!empty($item->tags->itemTags))
+				{
+					foreach ($item->tags->itemTags as &$tag)
+					{
+						$tag->main = (in_array($tag->id, $mainTags));
+					}
+					$item->tags->itemTags = ArrayHelper::sortObjects($item->tags->itemTags, 'main', -1);
+				}
+
 			}
 		}
 

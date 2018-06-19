@@ -339,6 +339,7 @@ class DiscussionsModelTopics extends ListModel
 			$postsAuthors  = ArrayHelper::getColumn($items, 'last_post_created_by');
 			$authors       = $this->getAuthors(array_unique(array_merge($topicsAuthors, $postsAuthors)));
 			$user          = Factory::getUser();
+			$mainTags      = ComponentHelper::getParams('com_discussions')->get('tags');
 
 			foreach ($items as &$item)
 			{
@@ -386,6 +387,15 @@ class DiscussionsModelTopics extends ListModel
 				// Get Tags
 				$item->tags = new TagsHelper;
 				$item->tags->getItemTags('com_discussions.topic', $item->id);
+
+				if (!empty($item->tags->itemTags))
+				{
+					foreach ($item->tags->itemTags as &$tag)
+					{
+						$tag->main = (in_array($tag->id, $mainTags));
+					}
+					$item->tags->itemTags = ArrayHelper::sortObjects($item->tags->itemTags, 'main', -1);
+				}
 
 				// Change shortcodes layout
 				$item->text           = str_replace('layout="discussions"', 'layout="discussions_preview"', $item->text);
@@ -482,8 +492,8 @@ class DiscussionsModelTopics extends ListModel
 					}
 
 
-					$data->link = Route::_(DiscussionsHelperRoute::getTopicsRoute($data->id));
-					$data->addLink   = Route::_(DiscussionsHelperRoute::getTopicFormRoute());
+					$data->link    = Route::_(DiscussionsHelperRoute::getTopicsRoute($data->id));
+					$data->addLink = Route::_(DiscussionsHelperRoute::getTopicFormRoute());
 
 					$this->_tag = $data;
 				}
@@ -643,6 +653,7 @@ class DiscussionsModelTopics extends ListModel
 
 		return $set_state;
 	}
+
 	/**
 	 * Get the filter form
 	 *
@@ -664,6 +675,7 @@ class DiscussionsModelTopics extends ListModel
 			}
 			$form->setValue('tag', 'filter', $this->getState('tag.id', 1));
 		}
+
 		return $form;
 	}
 

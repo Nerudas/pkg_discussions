@@ -299,8 +299,17 @@ class DiscussionsModelTopic extends ListModel
 				$data->params->merge($registry);
 
 				// Get Tags
+				$mainTags    = ComponentHelper::getParams('com_discussions')->get('tags');
 				$data->tags = new TagsHelper;
 				$data->tags->getItemTags('com_discussions.topic', $data->id);
+				if (!empty($data->tags->itemTags))
+				{
+					foreach ($data->tags->itemTags as &$tag)
+					{
+						$tag->main = (in_array($tag->id, $mainTags));
+					}
+					$data->tags->itemTags = ArrayHelper::sortObjects($data->tags->itemTags, 'main', -1);
+				}
 
 				// Convert the images field to an array.
 				$registry     = new Registry($data->images);
