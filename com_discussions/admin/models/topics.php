@@ -265,8 +265,6 @@ class DiscussionsModelTopics extends ListModel
 		{
 			$mainTags = ComponentHelper::getParams('com_discussions')->get('tags');
 
-			echo '<pre>', print_r($mainTags, true), '</pre>';
-
 			foreach ($items as &$item)
 			{
 				$author_avatar       = (!empty($item->author_avatar) && JFile::exists(JPATH_ROOT . '/' . $item->author_avatar)) ?
