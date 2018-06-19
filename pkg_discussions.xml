@@ -19,6 +19,7 @@
 		<folder type="component" id="com_discussions">com_discussions</folder>
 		<folder type="module" id="mod_discussions_admin" client="administrator">mod_discussions_admin</folder>
 		<folder type="module" id="mod_discussions_latest_topics" client="site">mod_discussions_latest_topics</folder>
+		<folder type="module" id="mod_discussions_tags" client="site">mod_discussions_tags</folder>
 	</files>
 	<updateservers>
 		<server type="extension" priority="1" name="Discussions Package">
