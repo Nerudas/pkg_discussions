@@ -10,7 +10,6 @@
 	<authorUrl>nerudas.ru</authorUrl>
 	<version>1.0.4</version>
 	<description>PKG_DISCUSSIONS_DESCRIPTION</description>
-	<scriptfile>script.php</scriptfile>
 	<languages folder="language">
 		<language tag="en-GB">en-GB/en-GB.pkg_discussions.sys.ini</language>
 		<language tag="ru-RU">ru-RU/ru-RU.pkg_discussions.sys.ini</language>
