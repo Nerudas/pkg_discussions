@@ -379,10 +379,10 @@ class DiscussionsModelTopics extends ListModel
 				$item->image  = (!empty($item->images) && !empty(reset($item->images)['src'])) ?
 					reset($item->images)['src'] : false;
 
-				$item->author = (isset($authors[$item->created_by])) ? $authors[$item->created_by] : false;
+				$item->author = (isset($authors[$item->created_by])) ? $authors[$item->created_by] : $authors[0];
 
 				$item->last_post_author = (isset($authors[$item->last_post_created_by])) ?
-					$authors[$item->last_post_created_by] : false;
+					$authors[$item->last_post_created_by] : $authors[0];
 
 				// Get Tags
 				$item->tags = new TagsHelper;
@@ -491,7 +491,6 @@ class DiscussionsModelTopics extends ListModel
 						$data = $root;
 					}
 
-
 					$data->link    = Route::_(DiscussionsHelperRoute::getTopicsRoute($data->id));
 					$data->addLink = Route::_(DiscussionsHelperRoute::getTopicFormRoute());
 
@@ -533,7 +532,28 @@ class DiscussionsModelTopics extends ListModel
 	{
 		$pks = (!is_array($pks)) ? (array) $pks : array_unique($pks);
 
-		$authors = array();
+		if (!isset($this->_authors[0]))
+		{
+			$author           = new stdClass();
+			$author->id       = 0;
+			$author->name     = Text::_('COM_PROFILES_GUEST');
+			$author->avatar   = Uri::root(true) . '/media/com_profiles/images/no-avatar.jpg';
+			$author->status   = '';
+			$author->online   = 0;
+			$author->job      = false;
+			$author->job_id   = '';
+			$author->job_name = '';
+			$author->job_logo = false;
+			$author->position = '';
+			$author->link     = false;
+			$author->job_link = '';
+
+			$this->_authors[0] = $author;
+		}
+
+		$authors    = array();
+		$authors[0] = $this->_authors[0];
+
 		if (!empty($pks))
 		{
 			$getAuthors = array();
@@ -542,23 +562,6 @@ class DiscussionsModelTopics extends ListModel
 				if (isset($this->_authors[$pk]))
 				{
 					$authors[$pk] = $this->_authors[$pk];
-				}
-				elseif ($pk == 0)
-				{
-					$author           = new stdClass();
-					$author->id       = 0;
-					$author->name     = Text::_('COM_PROFILES_GUEST');
-					$author->avatar   = Uri::root(true) . '/media/com_profiles/images/no-avatar.jpg';
-					$author->status   = '';
-					$author->online   = 0;
-					$author->job      = false;
-					$author->job_id   = '';
-					$author->job_name = '';
-					$author->job_logo = false;
-					$author->position = '';
-					$author->link     = '#none';
-					$author->job_link = '';
-					$authors[$pk]     = $author;
 				}
 				else
 				{
