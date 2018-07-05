@@ -118,10 +118,9 @@ class DiscussionsRouter extends RouterView
 	 */
 	public function getTopicFormSegment($id, $query)
 	{
-		$catid = (!empty($query['catid'])) ? $query['catid'] : 1;
-		$name  = (!empty($query['id'])) ? 'edit' : 'add';
+		$name = (!empty($query['id'])) ? 'edit' : 'add';
 
-		return array($catid => $name);
+		return array(1 => $name);
 	}
 
 	/**
@@ -169,9 +168,11 @@ class DiscussionsRouter extends RouterView
 					->where($db->quoteName('alias') . ' = ' . $db->quote($segment));
 				$db->setQuery($dbquery);
 				$id = $db->loadResult();
+
 				return (!empty($id)) ? $id : false;
 			}
 		}
+
 		return false;
 	}
 
@@ -204,9 +205,7 @@ class DiscussionsRouter extends RouterView
 	{
 		if (in_array($segment, array('form', 'add', 'edit')))
 		{
-			$catid = (!empty($query['catid'])) ? $query['catid'] : 1;
-
-			return (int) $catid;
+			return 1;
 		}
 
 		return false;
