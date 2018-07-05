@@ -339,7 +339,7 @@ class DiscussionsModelTopics extends ListModel
 			$postsAuthors  = ArrayHelper::getColumn($items, 'last_post_created_by');
 			$authors       = $this->getAuthors(array_unique(array_merge($topicsAuthors, $postsAuthors)));
 			$user          = Factory::getUser();
-			$mainTags      = ComponentHelper::getParams('com_discussions')->get('tags');
+			$mainTags      = ComponentHelper::getParams('com_discussions')->get('tags', array());
 
 			foreach ($items as &$item)
 			{
@@ -438,8 +438,9 @@ class DiscussionsModelTopics extends ListModel
 	{
 		if (!is_object($this->_tag))
 		{
-			$app = Factory::getApplication();
-			$pk  = (!empty($pk)) ? (int) $pk : (int) $this->getState('tag.id', $app->input->get('id', 1));
+			$app    = Factory::getApplication();
+			$pk     = (!empty($pk)) ? (int) $pk : (int) $this->getState('tag.id', $app->input->get('id', 1));
+			$tag_id = $pk;
 
 			$root            = new stdClass();
 			$root->title     = Text::_('JGLOBAL_ROOT');
@@ -447,10 +448,6 @@ class DiscussionsModelTopics extends ListModel
 			$root->parent_id = 0;
 			$root->link      = Route::_(DiscussionsHelperRoute::getTopicsRoute(1));
 			$root->addLink   = Route::_(DiscussionsHelperRoute::getTopicFormRoute());
-
-			$mainTag = ComponentHelper::getParams('com_info')->get('tags', 1);
-
-			$tag_id = ($pk > 1) ? $pk : $mainTag;
 
 			if ($tag_id > 1)
 			{
@@ -483,12 +480,6 @@ class DiscussionsModelTopics extends ListModel
 						$app->redirect($url = $errorRedirect, $msg = $errorMsg, $msgType = 'error', $moved = true);
 
 						return false;
-					}
-					if ($data->id == $mainTag)
-					{
-						$root->title = $data->title;
-
-						$data = $root;
 					}
 
 					$data->link    = Route::_(DiscussionsHelperRoute::getTopicsRoute($data->id));

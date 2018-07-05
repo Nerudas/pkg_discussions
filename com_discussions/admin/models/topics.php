@@ -263,7 +263,7 @@ class DiscussionsModelTopics extends ListModel
 		$items = parent::getItems();
 		if (!empty($items))
 		{
-			$mainTags = ComponentHelper::getParams('com_discussions')->get('tags');
+			$mainTags = ComponentHelper::getParams('com_discussions')->get('tags', array());
 
 			foreach ($items as &$item)
 			{
