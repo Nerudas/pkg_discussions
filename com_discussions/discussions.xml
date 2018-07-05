@@ -2,12 +2,12 @@
 <extension version="3.8" type="component" method="upgrade">
 	<name>COM_DISCUSSIONS</name>
 	<author>Nerudas</author>
-	<creationDate>June 2018</creationDate>
+	<creationDate>July 2018</creationDate>
 	<copyright>Copyright (c) 2015 - 2018 Nerudas. All rights reserved.</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<authorEmail>support@nerudas.ru</authorEmail>
 	<authorUrl>nerudas.ru</authorUrl>
-	<version>1.0.5</version>
+	<version>1.0.6</version>
 	<description>COM_DISCUSSIONS_DESCRIPTION</description>
 	<scriptfile>script.php</scriptfile>
 	<install>
