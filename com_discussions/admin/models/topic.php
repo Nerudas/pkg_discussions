@@ -18,6 +18,7 @@ use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 
 class DiscussionsModelTopic extends AdminModel
 {
@@ -197,11 +198,6 @@ class DiscussionsModelTopic extends AdminModel
 			$data['created'] = Factory::getDate()->toSql();
 		}
 
-		if (empty($data['region']))
-		{
-			$data['region'] = $app->input->cookie->get('region', '*');
-		}
-
 		if (isset($data['metadata']) && isset($data['metadata']['author']))
 		{
 			$data['metadata']['author'] = $filter->clean($data['metadata']['author'], 'TRIM');
@@ -224,7 +220,21 @@ class DiscussionsModelTopic extends AdminModel
 			$data['created_by'] = Factory::getUser()->id;
 		}
 
+		BaseDatabaseModel::addIncludePath(JPATH_SITE . '/components/com_location/models', 'LocationModel');
+		$regionsModel = BaseDatabaseModel::getInstance('Regions', 'LocationModel', array('ignore_request' => false));
+		if (empty($data['region']))
+		{
+			$data['region'] = ($app->isSite()) ? $regionsModel->getVisitorRegion()->id : $regionsModel->getProfileRegion($data['created_by'])->id;
+		}
+		$region = $regionsModel->getRegion($data['region']);
+
+
 		// Get tags search
+		$data['tags'] = (is_array($data['tags'])) ? $data['tags'] : array();
+		if ($region && !empty($region->items_tags))
+		{
+			$data['tags'] = array_unique(array_merge($data['tags'], explode(',', $region->items_tags)));
+		}
 		if (!empty($data['tags']))
 		{
 			$query = $db->getQuery(true)
