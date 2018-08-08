@@ -175,8 +175,7 @@ $columns = 9;
 							<?php endif; ?>
 						</td>
 						<td class="small hidden-phone nowrap">
-							<?php echo ($item->region !== '*') ? $this->escape($item->region_name) :
-								Text::_('JGLOBAL_FIELD_REGIONS_ALL'); ?>
+							<?php echo $this->escape($item->region_name); ?>
 						</td>
 						<td class="nowrap small hidden-phone">
 							<?php echo $item->created > 0 ? HTMLHelper::_('date', $item->created,

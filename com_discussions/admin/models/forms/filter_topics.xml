@@ -12,7 +12,9 @@
 			<option value="">JOPTION_SELECT_ACCESS</option>
 		</field>
 		<field name="created_by" type="user"/>
-		<field name="region" type="regions" show_null="true" onchange="this.form.submit();"/>
+		<field name="region" type="regions" onchange="this.form.submit();">
+			<option value="">JGLOBAL_FIELD_REGIONS_NULL</option>
+		</field>
 		<field name="tags" type="advtags"
 			   layout="joomla.form.field.advtags.select"
 			   multiple="true"
