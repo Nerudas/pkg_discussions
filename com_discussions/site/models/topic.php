@@ -247,6 +247,9 @@ class DiscussionsModelTopic extends ListModel
 						$db->quoteName('employees.key') . ' = ' . $db->quote(''))
 					->join('LEFT', '#__companies AS company ON company.id = employees.company_id AND company.state = 1');
 
+				// Join over the regions.
+				$query->select(array('r.id as region_id', 'r.name as region_name', 'r.icon as region_icon'))
+					->join('LEFT', '#__location_regions AS r ON r.id = t.region');
 
 				// Filter by published state.
 				$published = $this->getState('filter.published');
@@ -293,6 +296,16 @@ class DiscussionsModelTopic extends ListModel
 						}
 					}
 				}
+
+				// Get region
+				$data->region_icon = (!empty($data->region_icon) && JFile::exists(JPATH_ROOT . '/' . $data->region_icon)) ?
+					Uri::root(true) . $data->region_icon : false;
+				if ($data->region == '*')
+				{
+					$data->region_icon = false;
+					$data->region_name = Text::_('JGLOBAL_FIELD_REGIONS_ALL');
+				}
+
 
 				// Convert parameter fields to objects.
 				$registry     = new Registry($data->attribs);
