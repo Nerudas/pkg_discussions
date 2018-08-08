@@ -4,12 +4,9 @@
 		<field name="search" type="text"
 			   label="JSEARCH_FILTER"
 			   hint="JSEARCH_FILTER"/>
-
 		<field name="tag" type="discussionstags"
 			   label="JTAG"
 			   links="true"/>
-
-		<!--<field name="allregions" type="checkbox" label="COM_DISCUSSIONS_ALLREGIONS" value="1"/>-->
 		<field name="onlymy" type="checkbox" label="COM_DISCUSSIONS_ONLYMY" value="1"/>
 	</fields>
 </form>

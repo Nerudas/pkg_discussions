@@ -167,15 +167,11 @@ class DiscussionsModelTopics extends ListModel
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
-		$allregions = $this->getUserStateFromRequest($this->context . '.filter.allregions', 'filter_allregions', '');
-		$this->setState('filter.allregions', $allregions);
-
 		$author_id = $this->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id', '');
 		$this->setState('filter.author_id', $author_id);
 
 		$onlymy = $this->getUserStateFromRequest($this->context . '.filter.onlymy', 'filter_onlymy', '');
 		$this->setState('filter.onlymy', $onlymy);
-
 
 		// List state information.
 		$ordering  = empty($ordering) ? 'last_post_created' : $ordering;
@@ -205,7 +201,6 @@ class DiscussionsModelTopics extends ListModel
 		$id .= ':' . $this->getState('tag.id');
 		$id .= ':' . serialize($this->getState('filter.published'));
 		$id .= ':' . $this->getState('filter.search');
-		$id .= ':' . $this->getState('filter.allregions');
 		$id .= ':' . $this->getState('filter.onlymy');
 		$id .= ':' . $this->getState('filter.author_id');
 
@@ -228,10 +223,8 @@ class DiscussionsModelTopics extends ListModel
 			->from($db->quoteName('#__discussions_topics', 't'));
 
 		// Join over the regions.
-		$query->select(array('r.id as region_id', 'r.name AS region_name'))
-			->join('LEFT', '#__regions AS r ON r.id = 
-					(CASE t.region WHEN ' . $db->quote('*') . ' THEN 100 ELSE t.region END)');
-
+		$query->select(array('r.id as region_id', 'r.name as region_name', 'r.icon as region_icon'))
+			->join('LEFT', '#__location_regions AS r ON r.id = t.region');
 
 		// Join over last post.
 		$lastPostQuery = $db->getQuery(true)
@@ -400,6 +393,16 @@ class DiscussionsModelTopics extends ListModel
 				// Change shortcodes layout
 				$item->text           = str_replace('layout="discussions"', 'layout="discussions_preview"', $item->text);
 				$item->last_post_text = str_replace('layout="discussions"', 'layout="discussions_preview"', $item->last_post_text);
+
+				// Get region
+				$item->region_icon = (!empty($item->region_icon) && JFile::exists(JPATH_ROOT . '/' . $item->region_icon)) ?
+					Uri::root(true) . $item->region_icon : false;
+				if ($item->region == '*')
+				{
+					$item->region_icon = false;
+					$item->region_name = Text::_('JGLOBAL_FIELD_REGIONS_ALL');
+				}
+
 			}
 		}
 
