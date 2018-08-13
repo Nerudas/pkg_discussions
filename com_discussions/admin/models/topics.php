@@ -174,7 +174,7 @@ class DiscussionsModelTopics extends ListModel
 		$region = $this->getState('filter.region');
 		if (!empty($region))
 		{
-			$query->where($db->quoteName('t.region') . ' = ' . $db->quoteName($region));
+			$query->where($db->quoteName('t.region') . ' = ' . $db->quote($region));
 		}
 		// Filter by published state
 		$published = $this->getState('filter.published');
