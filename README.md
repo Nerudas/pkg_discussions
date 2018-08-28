@@ -22,3 +22,6 @@ Module for displaying the latest discussions topics
 
 * **Discussions - Tags Module**  
 Module for displaying discussions tags
+
+* **Sitemap - Discussions Plugin**  
+Plugin for adding the Discussions section to sitemap
