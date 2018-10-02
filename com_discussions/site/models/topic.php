@@ -22,6 +22,8 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Helper\TagsHelper;
 use Joomla\Utilities\ArrayHelper;
 
+JLoader::register('FieldTypesFilesHelper', JPATH_PLUGINS . '/fieldtypes/files/helper.php');
+
 class DiscussionsModelTopic extends ListModel
 {
 	/**
@@ -232,13 +234,11 @@ class DiscussionsModelTopic extends ListModel
 				$query->select(array(
 					'author.id as author_id',
 					'author.name as author_name',
-					'author.avatar as author_avatar',
 					'author.status as author_status',
 					'(session.time IS NOT NULL) AS author_online',
 					'(company.id IS NOT NULL) AS author_job',
 					'company.id as author_job_id',
 					'company.name as author_job_name',
-					'company.logo as author_job_logo',
 					'employees.position as  author_position'
 				))
 					->join('LEFT', '#__profiles AS author ON author.id = t.created_by')
@@ -248,7 +248,7 @@ class DiscussionsModelTopic extends ListModel
 					->join('LEFT', '#__companies AS company ON company.id = employees.company_id AND company.state = 1');
 
 				// Join over the regions.
-				$query->select(array('r.id as region_id', 'r.name as region_name', 'r.icon as region_icon'))
+				$query->select(array('r.id as region_id', 'r.name as region_name'))
 					->join('LEFT', '#__location_regions AS r ON r.id = t.region');
 
 				// Filter by published state.
@@ -297,16 +297,6 @@ class DiscussionsModelTopic extends ListModel
 					}
 				}
 
-				// Get region
-				$data->region_icon = (!empty($data->region_icon) && JFile::exists(JPATH_ROOT . '/' . $data->region_icon)) ?
-					Uri::root(true) . $data->region_icon : false;
-				if ($data->region == '*')
-				{
-					$data->region_icon = false;
-					$data->region_name = Text::_('JGLOBAL_FIELD_REGIONS_ALL');
-				}
-
-
 				// Convert parameter fields to objects.
 				$registry     = new Registry($data->attribs);
 				$data->params = clone $this->getState('params');
@@ -326,26 +316,30 @@ class DiscussionsModelTopic extends ListModel
 				}
 
 				// Convert the images field to an array.
+				$imagesHelper = new FieldTypesFilesHelper();
+				$imageFolder  = 'images/discussions/topics/' . $data->id;
 				$registry     = new Registry($data->images);
 				$data->images = $registry->toArray();
-				$data->image  = (!empty($data->images) && !empty(reset($data->images)['src'])) ?
-					reset($data->images)['src'] : false;
+				$data->images = $imagesHelper->getImages('content', $imageFolder, $data->images,
+					array('text' => true, 'for_field' => false));
+				$data->image  = (!empty($data->images) && !empty(reset($data->images)->src)) ?
+					reset($data->images)->src : false;
+
 
 				// If no access, the layout takes some responsibility for display of limited information.
 				$data->params->set('access-view', in_array($data->access, Factory::getUser()->getAuthorisedViewLevels()));
 
 				// Convert metadata fields to objects.
 				$data->metadata = new Registry($data->metadata);
+				$data->metadata->set('image', $imagesHelper->getImage('meta', $imageFolder, false, false));
 
 				$data->postsCount = $this->getTotal();
 
 				// Prepare author data
-				$author_avatar         = (!empty($data->author_avatar) && JFile::exists(JPATH_ROOT . '/' . $data->author_avatar)) ?
-					$data->author_avatar : 'media/com_profiles/images/no-avatar.jpg';
+				$author_avatar         = $imagesHelper->getImage('avatar', 'images/profiles/' . $data->author_id,
+					'media/com_profiles/images/no-avatar.jpg', false);
 				$data->author_avatar   = Uri::root(true) . '/' . $author_avatar;
 				$data->author_link     = Route::_(ProfilesHelperRoute::getProfileRoute($data->author_id));
-				$data->author_job_logo = (!empty($data->author_job_logo) && JFile::exists(JPATH_ROOT . '/' . $data->author_job_logo)) ?
-					Uri::root(true) . '/' . $data->author_job_logo : false;
 				$data->author_job_link = Route::_(CompaniesHelperRoute::getCompanyRoute($data->author_job_id));
 
 
@@ -393,13 +387,11 @@ class DiscussionsModelTopic extends ListModel
 		$query->select(array(
 			'author.id as author_id',
 			'author.name as author_name',
-			'author.avatar as author_avatar',
 			'author.status as author_status',
 			'(session.time IS NOT NULL) AS author_online',
 			'(company.id IS NOT NULL) AS author_job',
 			'company.id as author_job_id',
 			'company.name as author_job_name',
-			'company.logo as author_job_logo',
 			'employees.position as  author_position'
 		))
 			->join('LEFT', '#__profiles AS author ON author.id = p.created_by')
@@ -454,18 +446,18 @@ class DiscussionsModelTopic extends ListModel
 
 		if (!empty($items))
 		{
-			$user   = Factory::getUser();
-			$active = $this->getState('post.id', Factory::getApplication()->input->get('post_id'));
+			$user         = Factory::getUser();
+			$active       = $this->getState('post.id', Factory::getApplication()->input->get('post_id'));
+			$imagesHelper = new FieldTypesFilesHelper();
+
 			foreach ($items as &$item)
 			{
 				// Prepare author data
-				$item->author_name     = (!empty($item->author_name)) ? $item->author_name : Text::_('COM_PROFILES_GUEST');
-				$author_avatar         = (!empty($item->author_avatar) && JFile::exists(JPATH_ROOT . '/' . $item->author_avatar)) ?
-					$item->author_avatar : 'media/com_profiles/images/no-avatar.jpg';
-				$item->author_avatar   = Uri::root(true) . '/' . $author_avatar;
-				$item->author_link     = (!empty($item->author_id)) ? Route::_(ProfilesHelperRoute::getProfileRoute($item->author_id)) : '#none';
-				$item->author_job_logo = (!empty($item->author_job_logo) && JFile::exists(JPATH_ROOT . '/' . $item->author_job_logo)) ?
-					Uri::root(true) . '/' . $item->author_job_logo : false;
+				$item->author_name   = (!empty($item->author_name)) ? $item->author_name : Text::_('COM_PROFILES_GUEST');
+				$item->author_avatar = $imagesHelper->getImage('avatar', 'images/profiles/' . $item->author_id,
+					'media/com_profiles/images/no-avatar.jpg', false);
+				$item->author_link   = (!empty($item->author_id)) ? Route::_(ProfilesHelperRoute::getProfileRoute($item->author_id)) : '#none';
+
 				$item->author_job_link = Route::_(CompaniesHelperRoute::getCompanyRoute($item->author_job_id));
 
 				$item->editLink = false;
