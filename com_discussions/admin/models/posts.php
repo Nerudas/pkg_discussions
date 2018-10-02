@@ -122,13 +122,11 @@ class DiscussionsModelPosts extends ListModel
 		$query->select(array(
 			'author.id as author_id',
 			'author.name as author_name',
-			'author.avatar as author_avatar',
 			'author.status as author_status',
 			'(session.time IS NOT NULL) AS author_online',
 			'(company.id IS NOT NULL) AS author_job',
 			'company.id as author_job_id',
 			'company.name as author_job_name',
-			'company.logo as author_job_logo',
 			'employees.position as  author_position'
 		))
 			->join('LEFT', '#__profiles AS author ON author.id = p.created_by')
@@ -222,14 +220,12 @@ class DiscussionsModelPosts extends ListModel
 		$items = parent::getItems();
 		if (!empty($items))
 		{
+			$imagesHelper = new FieldTypesFilesHelper();
 			foreach ($items as &$item)
 			{
-				$author_avatar       = (!empty($item->author_avatar) && JFile::exists(JPATH_ROOT . '/' . $item->author_avatar)) ?
-					$item->author_avatar : 'media/com_profiles/images/no-avatar.jpg';
+				$author_avatar       = $imagesHelper->getImage('avatar', 'images/profiles/' . $item->author_id,
+					'media/com_profiles/images/no-avatar.jpg', false);
 				$item->author_avatar = Uri::root(true) . '/' . $author_avatar;
-
-				$item->author_job_logo = (!empty($item->author_job_logo) && JFile::exists(JPATH_ROOT . '/' . $item->author_job_logo)) ?
-					Uri::root(true) . '/' . $item->author_job_logo : false;
 			}
 		}
 
