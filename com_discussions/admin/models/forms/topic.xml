@@ -101,7 +101,10 @@
 			   description="JFIELD_META_DESCRIPTION_DESC"
 			   rows="3"
 			   cols="30"/>
-
+		<field name="metaimage" type="image"
+			   label="JGLOBAL_FIELD_METAIMAGE"
+			   folder_field="images_folder"
+			   filename="meta"/>
 		<fields name="metadata">
 			<field name="robots" type="list"
 				   label="JFIELD_METADATA_ROBOTS_LABEL"
