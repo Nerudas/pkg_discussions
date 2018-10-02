@@ -20,6 +20,8 @@ use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Uri\Uri;
 
+JLoader::register('FieldTypesFilesHelper', JPATH_PLUGINS . '/fieldtypes/files/helper.php');
+
 class DiscussionsModelTopics extends ListModel
 {
 	/**
@@ -223,7 +225,7 @@ class DiscussionsModelTopics extends ListModel
 			->from($db->quoteName('#__discussions_topics', 't'));
 
 		// Join over the regions.
-		$query->select(array('r.id as region_id', 'r.name as region_name', 'r.icon as region_icon'))
+		$query->select(array('r.id as region_id', 'r.name as region_name'))
 			->join('LEFT', '#__location_regions AS r ON r.id = t.region');
 
 		// Join over last post.
@@ -333,7 +335,7 @@ class DiscussionsModelTopics extends ListModel
 			$authors       = $this->getAuthors(array_unique(array_merge($topicsAuthors, $postsAuthors)));
 			$user          = Factory::getUser();
 			$mainTags      = ComponentHelper::getParams('com_discussions')->get('tags', array());
-
+			$imagesHelper  = new FieldTypesFilesHelper();
 			foreach ($items as &$item)
 			{
 				$item->link           = Route::_(DiscussionsHelperRoute::getTopicRoute($item->id));
@@ -366,11 +368,13 @@ class DiscussionsModelTopics extends ListModel
 
 				$item->postsCount = DiscussionsHelperTopic::getPostsTotal($item->id);
 
-				// Convert the images field to an array.
+				$imageFolder  = 'images/discussions/topics/' . $item->id;
 				$registry     = new Registry($item->images);
 				$item->images = $registry->toArray();
-				$item->image  = (!empty($item->images) && !empty(reset($item->images)['src'])) ?
-					reset($item->images)['src'] : false;
+				$item->images = $imagesHelper->getImages('content', $imageFolder, $item->images,
+					array('text' => true, 'for_field' => false));
+				$item->image  = (!empty($item->images) && !empty(reset($item->images)->src)) ?
+					reset($item->images)->src : false;
 
 				$item->author = (isset($authors[$item->created_by])) ? $authors[$item->created_by] : $authors[0];
 
@@ -393,16 +397,6 @@ class DiscussionsModelTopics extends ListModel
 				// Change shortcodes layout
 				$item->text           = str_replace('layout="discussions"', 'layout="discussions_preview"', $item->text);
 				$item->last_post_text = str_replace('layout="discussions"', 'layout="discussions_preview"', $item->last_post_text);
-
-				// Get region
-				$item->region_icon = (!empty($item->region_icon) && JFile::exists(JPATH_ROOT . '/' . $item->region_icon)) ?
-					Uri::root(true) . $item->region_icon : false;
-				if ($item->region == '*')
-				{
-					$item->region_icon = false;
-					$item->region_name = Text::_('JGLOBAL_FIELD_REGIONS_ALL');
-				}
-
 			}
 		}
 
@@ -575,13 +569,11 @@ class DiscussionsModelTopics extends ListModel
 						->select(array(
 							'p.id as id',
 							'p.name as name',
-							'p.avatar as avatar',
 							'p.status as status',
 							'(s.time IS NOT NULL) AS online',
 							'(c.id IS NOT NULL) AS job',
 							'c.id as job_id',
 							'c.name as job_name',
-							'c.logo as job_logo',
 							'e.position as  position'
 						))
 						->from($db->quoteName('#__profiles', 'p'))
@@ -593,16 +585,15 @@ class DiscussionsModelTopics extends ListModel
 						->where('u.block = 0')
 						->where('p.id IN (' . implode(',', $getAuthors) . ')');
 					$db->setQuery($query);
-					$objects = $db->loadObjectList('id');
-
+					$objects      = $db->loadObjectList('id');
+					$imagesHelper = new FieldTypesFilesHelper();
 					foreach ($objects as $object)
 					{
-						$avatar           = (!empty($object->avatar) && JFile::exists(JPATH_ROOT . '/' . $object->avatar)) ?
-							$object->avatar : 'media/com_profiles/images/no-avatar.jpg';
-						$object->avatar   = Uri::root(true) . '/' . $avatar;
-						$object->link     = Route::_(ProfilesHelperRoute::getProfileRoute($object->id));
-						$object->job_logo = (!empty($object->job_logo) && JFile::exists(JPATH_ROOT . '/' . $object->job_logo)) ?
-							Uri::root(true) . '/' . $object->job_logo : false;
+						$object->avatar = $imagesHelper->getImage('avatar', 'images/profiles/' . $object->id,
+							'media/com_profiles/images/no-avatar.jpg', false);
+
+						$object->link = Route::_(ProfilesHelperRoute::getProfileRoute($object->id));
+
 						$object->job_link = Route::_(CompaniesHelperRoute::getCompanyRoute($object->job_id));
 
 						$authors[$object->id] = $object;
