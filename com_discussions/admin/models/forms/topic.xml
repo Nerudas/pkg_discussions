@@ -17,11 +17,13 @@
 			   label="JTAG"
 			   description="JTAG_DESC"
 			   multiple="true"/>
-		<field name="images" type="ajaximage"
-			   multiple="true"
+		<field name="images" type="images"
+			   label="COM_DISCUSSIONS_TOPIC_IMAGES"
+			   folder_field="images_folder"
+			   folder="content"
+			   text="false"
 			   unique="true"
-			   limit="5"
-			   label="COM_DISCUSSIONS_TOPIC_IMAGES"/>
+			   limit="5"/>
 	</fieldset>
 
 	<fieldset name="global">
@@ -45,7 +47,8 @@
 			   label="JFIELD_ACCESS_LABEL"
 			   description="JFIELD_ACCESS_DESC"
 			   size="1"/>
-		<field name="imagefolder" type="imagefolder" path="images/discussions/topics"/>
+		<field name="images_folder" type="folder"
+			   label="JGLOBAL_FIELD_IMAGES_FOLDER_LABEL"/>
 	</fieldset>
 
 	<fieldset name="attribs" label="JGLOBAL_FIELDSET_OPTIONS">

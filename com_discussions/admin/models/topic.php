@@ -16,37 +16,22 @@ use Joomla\Registry\Registry;
 use Joomla\CMS\Helper\TagsHelper;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Table\Table;
-use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+
+JLoader::register('FieldTypesFilesHelper', JPATH_PLUGINS . '/fieldtypes/files/helper.php');
 
 class DiscussionsModelTopic extends AdminModel
 {
 	/**
-	 * Imagefolder helper helper
+	 * Images root path
 	 *
-	 * @var    new imageFolderHelper
+	 * @var    string
 	 *
-	 * @since  1.0.0
+	 * @since  1.3.0
 	 */
-	protected $imageFolderHelper = null;
+	protected $images_root = 'images/discussions/topics';
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   array $config An optional associative array of configuration settings.
-	 *
-	 * @see     AdminModel
-	 *
-	 * @since   1.0.0
-	 */
-	public function __construct($config = array())
-	{
-		JLoader::register('imageFolderHelper', JPATH_PLUGINS . '/fieldtypes/ajaximage/helpers/imagefolder.php');
-		$this->imageFolderHelper = new imageFolderHelper('images/discussions/topics');
-
-		parent::__construct($config);
-	}
 
 	/**
 	 * Method to get a single record.
@@ -134,10 +119,8 @@ class DiscussionsModelTopic extends AdminModel
 			$form->setFieldAttribute('state', 'filter', 'unset');
 		}
 
-		// Set update images link
-		$form->setFieldAttribute('images', 'saveurl',
-			Uri::base(true) . '/index.php?option=com_discussions&task=topic.updateImages&field=images&id=' . $id);
-
+		// Set images folder root
+		$form->setFieldAttribute('images_folder', 'root', $this->images_root);
 
 		// Set Tags parents
 		$config = ComponentHelper::getParams('com_discussions');
@@ -266,17 +249,10 @@ class DiscussionsModelTopic extends AdminModel
 			$id = $this->getState($this->getName() . '.id');
 
 			// Save images
-			$data['imagefolder'] = (!empty($data['imagefolder'])) ? $data['imagefolder'] :
-				$this->imageFolderHelper->getItemImageFolder($id);
-
-			if ($isNew)
+			if ($isNew && !empty($data['images_folder']))
 			{
-				$data['images'] = (isset($data['images'])) ? $data['images'] : array();
-			}
-
-			if (isset($data['images']))
-			{
-				$this->imageFolderHelper->saveItemImages($id, $data['imagefolder'], '#__discussions_topics', 'images', $data['images']);
+				$filesHelper = new FieldTypesFilesHelper();
+				$filesHelper->moveTemporaryFolder($data['images_folder'], $id, $this->images_root);
 			}
 
 			return $id;
@@ -298,10 +274,12 @@ class DiscussionsModelTopic extends AdminModel
 	{
 		if (parent::delete($pks))
 		{
+			$filesHelper = new FieldTypesFilesHelper();
+
 			// Delete images
 			foreach ($pks as $pk)
 			{
-				$this->imageFolderHelper->deleteItemImageFolder($pk);
+				$filesHelper->deleteItemFolder($pk, $this->images_root);
 			}
 
 			// Delete employees
