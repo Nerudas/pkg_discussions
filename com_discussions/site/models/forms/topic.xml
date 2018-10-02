@@ -18,18 +18,20 @@
 			   label="JTAG"
 			   description="JTAG_DESC"
 			   multiple="true"/>
-		<field name="images" type="ajaximage"
-			   multiple="true"
+		<field name="images" type="images"
+			   label="COM_DISCUSSIONS_TOPIC_IMAGES"
+			   folder_field="images_folder"
+			   folder="content"
+			   text="false"
 			   unique="true"
-			   limit="5"
-			   label="COM_DISCUSSIONS_TOPIC_IMAGES"/>
+			   limit="5"/>
 	</fieldset>
-
 
 	<fieldset name="hidden">
 		<field name="context" type="hidden" readonly="true"/>
 		<field name="item_id" type="hidden" readonly="true"/>
-		<field name="imagefolder" type="imagefolder" path="images/discussions/topics"/>
+		<field name="images_folder" type="folder"
+			   label="JGLOBAL_FIELD_IMAGES_FOLDER_LABEL"/>
 		<field name="region" type="hidden"/>
 		<field name="state" type="hidden" default="1"/>
 		<field name="access" type="hidden" readonly="true"/>
