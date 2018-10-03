@@ -20,6 +20,7 @@
 		<folder type="module" id="mod_discussions_latest_topics" client="site">mod_discussions_latest_topics</folder>
 		<folder type="module" id="mod_discussions_tags" client="site">mod_discussions_tags</folder>
 		<folder type="plugin" id="discussions" group="sitemap">plg_sitemap_discussions</folder>
+		<folder type="plugin" id="tags_discussions_meta" group="content">plg_content_tags_discussions_meta</folder>
 	</files>
 	<updateservers>
 		<server type="extension" priority="1" name="Discussions Package">

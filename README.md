@@ -25,3 +25,6 @@ Module for displaying discussions tags
 
 * **Sitemap - Discussions Plugin**  
 Plugin for adding the Discussions section to sitemap
+
+* **Content - Tags Discussions Metadata Plugin**  
+Plugin for adding metadata fields in com_tags

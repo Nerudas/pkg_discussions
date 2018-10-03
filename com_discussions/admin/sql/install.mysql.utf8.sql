@@ -36,3 +36,15 @@ CREATE TABLE IF NOT EXISTS `#__discussions_posts` (
 	ENGINE = MyISAM
 	DEFAULT CHARSET = utf8
 	AUTO_INCREMENT = 0;
+
+
+CREATE TABLE IF NOT EXISTS `#__discussions_tags` (
+  `id`           INT(11)          NOT NULL AUTO_INCREMENT,
+  `metakey`      MEDIUMTEXT       NOT NULL DEFAULT '',
+  `metadesc`     MEDIUMTEXT       NOT NULL DEFAULT '',
+  `metadata`     MEDIUMTEXT       NOT NULL DEFAULT '',
+  UNIQUE KEY `id` (`id`)
+)
+  ENGINE = MyISAM
+  DEFAULT CHARSET = utf8
+AUTO_INCREMENT = 0;
