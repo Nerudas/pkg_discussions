@@ -445,6 +445,7 @@ class DiscussionsModelTopics extends ListModel
 			$root->parent_id = 0;
 			$root->link      = Route::_(DiscussionsHelperRoute::getTopicsRoute(1));
 			$root->addLink   = Route::_(DiscussionsHelperRoute::getTopicFormRoute());
+			$root->metadata  = new Registry();
 
 			if ($tag_id > 1)
 			{
@@ -454,10 +455,12 @@ class DiscussionsModelTopics extends ListModel
 				{
 					$db    = $this->getDbo();
 					$query = $db->getQuery(true)
-						->select(array('t.id', 't.parent_id', 't.title', 'pt.title as parent_title'))
+						->select(array('t.id', 't.parent_id', 't.title', 'pt.title as parent_title',
+							'mt.metakey', 'mt.metadesc', 'mt.metadata'))
 						->from('#__tags AS t')
 						->where('t.id = ' . (int) $tag_id)
-						->join('LEFT', '#__tags AS pt ON pt.id = t.parent_id');
+						->join('LEFT', '#__tags AS pt ON pt.id = t.parent_id')
+						->join('LEFT', '#__discussions_tags AS mt ON mt.id = t.id');
 
 					$user = Factory::getUser();
 					if (!$user->authorise('core.admin'))
@@ -481,6 +484,15 @@ class DiscussionsModelTopics extends ListModel
 
 					$data->link    = Route::_(DiscussionsHelperRoute::getTopicsRoute($data->id));
 					$data->addLink = Route::_(DiscussionsHelperRoute::getTopicFormRoute());
+
+					$imagesHelper = new FieldTypesFilesHelper();
+					$imageFolder  = 'images/discussions/tags/' . $data->id;
+
+					// Convert the metadata field
+					$data->metadata = new Registry($data->metadata);
+					$data->metadata->set('image', $imagesHelper->getImage('meta', $imageFolder, false, false));
+					$this->_tag = $data;
+
 
 					$this->_tag = $data;
 				}
