@@ -16,6 +16,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Utilities\ArrayHelper;
 
 class DiscussionsViewTopic extends HtmlView
 {
@@ -195,24 +196,24 @@ class DiscussionsViewTopic extends HtmlView
 		return parent::display($tpl);
 	}
 
+
 	/**
 	 * Prepares the document
 	 *
 	 * @return  void
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 */
 	protected function _prepareDocument()
 	{
-		$app      = Factory::getApplication();
-		$pathway  = $app->getPathway();
-		$topic    = $this->topic;
-		$url      = rtrim(URI::root(), '/') . $topic->link;
-		$sitename = $app->get('sitename');
-		$menus    = $app->getMenu();
-		$menu     = $menus->getActive();
-		$id       = (int) @$menu->query['id'];
-
+		$app       = Factory::getApplication();
+		$pathway   = $app->getPathway();
+		$item      = $this->topic;
+		$canonical = rtrim(URI::root(), '/') . $this->topic->link;
+		$sitename  = $app->get('sitename');
+		$menu      = $app->getMenu()->getActive();
+		$id        = (int) @$menu->query['id'];
+		$current   = ($menu && $menu->query['option'] == 'com_discussions' && $menu->query['view'] == 'topic' && $id == $item->id);
 		if ($menu)
 		{
 			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
@@ -224,66 +225,66 @@ class DiscussionsViewTopic extends HtmlView
 		$title = $this->params->get('page_title', $sitename);
 
 		// If the menu item does not concern this contact
-		if ($menu && ($menu->query['option'] !== 'com_discussions' || $menu->query['view'] !== 'topic' || $id != $topic->id))
+		if (!$current)
 		{
-			if ($topic->title)
+
+			if ($item->title)
 			{
-				$title = $topic->title;
+				$title = $item->title;
 			}
 
 			$path   = array();
 			$path[] = array('title' => $title, 'link' => '');
 
-			foreach (array_reverse($path) as $item)
+			foreach (array_reverse($path) as $value)
 			{
-				$pathway->addItem($item['title'], $item['link']);
+				$pathway->addItem($value['title'], $value['link']);
 			}
 		}
 
 		// Set pathway title
 		$title = array();
-		foreach ($pathway->getPathWay() as $item)
+		foreach ($pathway->getPathWay() as $value)
 		{
-			$title[] = $item->name;
+			$title[] = $value->name;
 		}
 		$title = implode(' / ', $title);
-
-		if ($app->get('sitename_pagetitles', 0) == 1)
-		{
-			$title = Text::sprintf('JPAGETITLE', $sitename, $title);
-		}
-		elseif ($app->get('sitename_pagetitles', 0) == 2)
-		{
-			$title = Text::sprintf('JPAGETITLE', $title, $sitename);
-		}
 
 		// Set Meta Title
 		$this->document->setTitle($title);
 
 		// Set Meta Description
-		if (!empty($topic->metadesc))
+		if (!empty($item->metadesc))
 		{
-			$this->document->setDescription($topic->metadesc);
+			$this->document->setDescription($item->metadesc);
 		}
-		elseif ($this->params->get('menu-meta_description'))
+		elseif ($current && $this->params->get('menu-meta_description'))
 		{
 			$this->document->setDescription($this->params->get('menu-meta_description'));
 		}
-
-		// Set Meta Keywords
-		if (!empty($topic->metakey))
+		elseif (!empty($item->text))
 		{
-			$this->document->setMetadata('keywords', $topic->metakey);
+			$this->document->setDescription(JHtmlString::truncate($item->text, 150, false, false));
 		}
-		elseif ($this->params->get('menu-meta_keywords'))
+		// Set Meta Keywords
+		if (!empty($item->metakey))
+		{
+			$this->document->setMetadata('keywords', $item->metakey);
+		}
+		elseif ($current && $this->params->get('menu-meta_keywords'))
 		{
 			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
 		}
+		elseif (!empty(($this->topic->tags->itemTags)))
+		{
+			$this->document->setMetadata('keywords', implode(', ',
+				ArrayHelper::getColumn($this->topic->tags->itemTags, 'title')));
+		}
 
 		// Set Meta Robots
-		if ($topic->metadata->get('robots', ''))
+		if ($item->metadata->get('robots', ''))
 		{
-			$this->document->setMetadata('robots', $topic->metadata->get('robots', ''));
+			$this->document->setMetadata('robots', $item->metadata->get('robots', ''));
 		}
 		elseif ($this->params->get('robots'))
 		{
@@ -291,25 +292,29 @@ class DiscussionsViewTopic extends HtmlView
 		}
 
 		// Set Meta Author
-		if ($app->get('MetaAuthor') == '1' && $topic->metadata->get('author', ''))
+		if ($app->get('MetaAuthor') == '1' && $item->metadata->get('author', ''))
 		{
-			$this->document->setMetaData('author', $topic->metadata->get('author'));
+			$this->document->setMetaData('author', $item->metadata->get('author'));
 		}
 
 		// Set Meta Rights
-		if ($topic->metadata->get('rights', ''))
+		if ($item->metadata->get('rights', ''))
 		{
-			$this->document->setMetaData('author', $topic->metadata->get('rights'));
+			$this->document->setMetaData('author', $item->metadata->get('rights'));
 		}
 
 		// Set Meta Image
-		if ($topic->metadata->get('image', ''))
+		if ($item->metadata->get('image', ''))
 		{
-			$this->document->setMetaData('image', URI::base() . $topic->metadata->get('image'));
+			$this->document->setMetaData('image', URI::root() . $item->metadata->get('image'));
 		}
-		elseif ($this->params->get('menu-meta_image', ''))
+		elseif ($current && $this->params->get('menu-meta_image', ''))
 		{
-			$this->document->setMetaData('image', Uri::base() . $this->params->get('menu-meta_image'));
+			$this->document->setMetaData('image', Uri::root() . $this->params->get('menu-meta_image'));
+		}
+		elseif ($this->topic->image)
+		{
+			$this->document->setMetaData('image', Uri::root() . $this->topic->image);
 		}
 
 		// Set Meta twitter
@@ -325,7 +330,7 @@ class DiscussionsViewTopic extends HtmlView
 		{
 			$this->document->setMetaData('twitter:image', $this->document->getMetaData('image'));
 		}
-		$this->document->setMetaData('twitter:url', $url);
+		$this->document->setMetaData('twitter:url', $canonical);
 
 		// Set Meta Open Graph
 		$this->document->setMetadata('og:type', 'website', 'property');
@@ -339,6 +344,42 @@ class DiscussionsViewTopic extends HtmlView
 		{
 			$this->document->setMetaData('og:image', $this->document->getMetaData('image'), 'property');
 		}
-		$this->document->setMetaData('og:url', $url, 'property');
+		$this->document->setMetaData('og:url', $canonical, 'property');
+
+		// No doubles
+		$uri = Uri::getInstance();
+		$url = urldecode($uri->toString());
+
+		if ($url !== $canonical)
+		{
+			$this->document->addHeadLink($canonical, 'canonical');
+
+			$link       = $canonical;
+			$linkParams = array();
+			$hash       = '';
+
+			if (!empty($uri->getVar('start')))
+			{
+				$linkParams['start'] = $uri->getVar('start');
+			}
+
+			if (!empty($uri->getVar('post_id')) || $uri->getVar('post_id', 'none') !== 'none')
+			{
+				$hash = '#comments';
+
+				$linkParams['post_id'] = $uri->getVar('post_id');
+			}
+
+			if (!empty($linkParams))
+			{
+				$link = $link . '?' . urldecode(http_build_query($linkParams));
+			}
+
+			if ($url != $link)
+			{
+				$link .= $hash;
+				$app->redirect($link, true);
+			}
+		}
 	}
 }
